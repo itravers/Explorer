@@ -1,9 +1,19 @@
 var fireLighting = false;
 
+function addMessage(msg){
+  //if there are more than 20 messages already, remove the last one
+  if($('#msgList li').length >= 25){
+    $('#msgList li').first().remove();
+  }
+
+  $('#msgList').prepend("<li>"+msg+"</li>");
+}
+
 function lightFire(){
   //alert("lighting fire");
   if(fireLighting == false){
-    activateButton(20, "lightFireProgress", "Light Fire");
+    activateButton(2, "lightFireProgress", "Light Fire");
+    addMessage("Fire Started");
   }
 }
 

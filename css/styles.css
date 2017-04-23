@@ -1,3 +1,8 @@
+#mapCanvas{
+  border: 1px solid black;
+  margin: 20px;
+}
+
 .msgListContainer{
   float:left;
 }
@@ -9,6 +14,7 @@
   width: 150px;
 }
 
+/*
 .msgListContainer:after {
   position: absolute;
   bottom: 0;  
@@ -21,7 +27,7 @@
   );
   pointer-events: none; /* so the text is still selectable */
 }
-
+*/
 #msgList li{
 }
 

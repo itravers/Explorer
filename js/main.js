@@ -55,9 +55,10 @@ var fireLighting = false;
 var health = 100000;
 var wood = 100;
 var water = 10000;
+var sand = 0;
 
 //skills
-var siteDistance = 2;
+var siteDistance = 25;
 
 function initMap(){
   //init siteMap to be the size of map, with every value set to 0 (not visible)
@@ -111,6 +112,12 @@ function getItem(){
     water=water+10;
     $("#waterInventory").text("Water   : " + water);
     addMessage("Got 10 Water");
+    printMap();
+  }else if(map[x][y] = "S"){//got sand
+    map[x][y] = "0";
+    sand++;
+    $("#sandInventory").text("Sand     : " + sand);
+    addMessage("Got 1 Sand");
     printMap();
   }else if(map[x][y] == "0"){
     addMessage("No Item to get");
@@ -226,9 +233,11 @@ function getColorFromMapPosition(x, y){
   if(map[x][y] == '0'){
     return 'white';
   }else if(map[x][y] == 'W'){
-    return 'brown'
+    return '#663300'
   }else if(map[x][y] == 'A'){
-    return 'blue';
+    return '#79BDEA';
+  }else if(map[x][y] == 'S'){
+    return '#c2b280';
   }
 }
 

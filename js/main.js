@@ -52,10 +52,10 @@ var movesSinceLastFireStateChange = 0;
 var fireLighting = false;
 
 //inventory
-var health = 100000;
-var wood = 100;
-var water = 10000;
-var sand = 100;
+var health = 100;
+var wood = 0;
+var water = 0;
+var sand = 0;
 var glass = 0;
 
 //skills
@@ -115,7 +115,7 @@ function getItem(){
     $("#waterInventory").text("Water   : " + water);
     addMessage("Got 10 Water");
     printMap();
-  }else if(map[x][y] = "S"){//got sand
+  }else if(map[x][y] == "S"){//got sand
     map[x][y] = "0";
     sand++;
     $("#sandInventory").text("Sand     : " + sand);
@@ -306,10 +306,11 @@ function addMessage(msg){
    decreases fire to barely burning.
 */
 function makeGlass(){
-  if(sand >= 10){
+  var sandNeeded = 10;
+  if(sand >= sandNeeded){
     if(fireState == 4){
       glass++;
-      sand = sand - 10;
+      sand = sand - sandNeeded;
       fireState = 0;
       addMessage("Made 1 Glass");
       $('#glassInventory').text("Glass    : " + glass);
@@ -319,7 +320,7 @@ function makeGlass(){
       addMessage("Fire isn't Hot Enough!");
     }
   }else{
-    addMessage("Not Enough Sand!");
+    addMessage("Need " +sandNeeded+ " Sand!");
   }
 
   //if we have glass, and we have wood, the upgradeTelescope button should show
@@ -337,10 +338,12 @@ function makeGlass(){
           increases siteDistance
 */
 function upgradeTelescope(){
-  if(wood >= ((telescopeLevel+1) * 10)){
-    if(glass >= ((telescopeLevel+1) * 2)){
-      glass = glass - ((telescopeLevel+1)*2);
-      wood = wood - ((telescopeLevel+1)*10);
+  var woodNeeded = ((telescopeLevel+1) * 10);
+  var glassNeeded = ((telescopeLevel+1) * 2);
+  if(wood >= woodNeeded){
+    if(glass >= glassNeeded){
+      glass = glass - glassNeeded;
+      wood = wood - woodNeeded;
       telescopeLevel++
       siteDistance = (telescopeLevel * 2) + 1;
       $('#telescopeInventory').text("Tele :   " + telescopeLevel);
@@ -348,10 +351,10 @@ function upgradeTelescope(){
       $('#woodInventory').text("Wood :   " + wood);
       printMap(); 
     }else{
-      addMessage("Not Enough Glass!");
+      addMessage("Need "+ glassNeeded+ " Glass!");
     }
   }else{
-    addMessage("Not Enough Wood!");
+    addMessage("Need " +woodNeeded+ " Wood!");
   }
 }
 

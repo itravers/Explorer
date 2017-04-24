@@ -52,14 +52,18 @@ var movesSinceLastFireStateChange = 0;
 var fireLighting = false;
 
 //inventory
-var health = 100;
-var wood = 0;
-var water = 0;
-var sand = 0;
-var glass = 0;
+var health = 100000;
+var wood = 10000;
+var water = 10000;
+var sand = 10000;
+var glass = 10000;
+var rock = 10000;
+
+//items
+var rockHammer = 0;
 
 //skills
-var telescopeLevel = 0;
+var telescopeLevel = 50;
 var siteDistance = (telescopeLevel*2)+1;
 
 function initMap(){
@@ -121,6 +125,12 @@ function getItem(){
     $("#sandInventory").text("Sand     : " + sand);
     addMessage("Got 1 Sand");
     printMap();
+  }else if(map[x][y] == 'R'){//got rock
+    map[x][y] = "0";
+    rock++;
+    $("#rockInventory").text("Rock    : " + rock);
+    addMessage("Got 1 Rock");
+    printMap();
   }else if(map[x][y] == "0"){
     addMessage("No Item to get");
   }
@@ -130,6 +140,21 @@ function getItem(){
   //makeGlassButton should only show if we have some sand
   if(sand > 0){
     $('#makeGlassButton').show();
+  }
+
+  //placeStoneWalkButton should only show if we have some rocks
+  if(rock > 0){
+    $('#placeStoneWalkButton').show();
+  }
+
+  //if we have rocks and wood and no rockhammer
+  if(rock > 0 && wood > 0 && rockHammer != 1){
+    $('#createRockHammerButton').show();
+  }
+
+  //show that rock hammer has been crafted in inventory if rockHammer = 1
+  if(rockHammer == 1){
+    $('#rockHammerInventory').text("Rock Hammer : Crafted");
   }
 
 }
@@ -197,7 +222,7 @@ function movePlayer(dir){
     }
 
     //decrease fire state if movesSinceLastFireStateChange > 10;
-    if(movesSinceLastFireStateChange > 10){
+    if(movesSinceLastFireStateChange > 20){
       if(fireState > 0){
         fireState--;
         movesSinceLastFireStateChange = 0;
@@ -269,6 +294,8 @@ function getColorFromMapPosition(x, y){
     return '#79BDEA';
   }else if(map[x][y] == 'S'){
     return '#c2b280';
+  }else if(map[x][y] == 'R'){
+    return '#aaa7a4';
   }
 }
 
@@ -317,6 +344,46 @@ function addMessage(msg){
   }
 
   $('#msgList').prepend("<li>"+msg+"</li>");
+}
+
+/* Places a stone walkway at players current location on map
+   IF: Nothing else is at location
+   IF: Player has enough rocks in inventory
+   movePlayer will not take water, or decrease fireState
+   if player is moving from a Stone Walkway
+*/ 
+function placeStoneWalk(){
+
+}
+
+/* Creates a rock hammer and adds it to players inventory
+   IF: Player has enough rocks
+    &: Player has enough wood
+*/
+function createRockHammer(){
+  var rocksNeeded = 25;
+  var woodNeeded = 50;
+  
+  if(rock >= rocksNeeded){
+    if(wood >= woodNeeded){
+      if(rockHammer == 0){
+         rock = rock - rocksNeeded;
+         wood = wood - woodNeeded;
+         rockHammer = 1;
+         activateButton(2, "createRockHammerProgress", "Create Rock Hammer");
+         $('#rockHammerInventory').text("Rock Hammer : Crafted");
+         $('#rockInventory').text("Rocks : " + rock);
+         $('#woodInventory').text("Wood  : " + wood);
+      }else{
+        addMessage("You've already crafted a Rock Hammer");
+      }
+    }else{
+      addMessage("Need " +woodNeeded+ " Wood!");
+    }
+  }else{
+    addMessage("Need " +rocksNeeded+ " Rocks!");
+  }
+
 }
 
 /* Called when the user clicks Make Glass button
@@ -370,6 +437,7 @@ function upgradeTelescope(){
       $('#telescopeInventory').text("Tele :   " + telescopeLevel);
       $('#glassInventory').text("Glass :   " + glass);
       $('#woodInventory').text("Wood :   " + wood);
+      activateButton(2, "upgradeTelescopeProgress", "Upgrade Telescope");
       printMap(); 
     }else{
       addMessage("Need "+ glassNeeded+ " Glass!");
@@ -415,6 +483,8 @@ function activateButton(interval, buttonID, text) {
     if (width >= 100) {
       clearInterval(id);
       elem.innerHTML = text;//bring back text once done
+      //if is createRockHammerProgress, we want to hide createRockHammerButton now
+        $('#createRockHammerButton').toggle();
       if(buttonID == 'lightFireProgress')fireLighting = false;
     } else {
       width++; 

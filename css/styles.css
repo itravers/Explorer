@@ -1,9 +1,11 @@
+/* don't want css on canvas, makes it blurry
 #mapCanvas{
   border: 1px solid black;
   margin: 20px;
   height: 600px;
   width: 600px;
 }
+*/
 
 .msgListContainer{
   float:left;

@@ -59,7 +59,8 @@ var sand = 100;
 var glass = 0;
 
 //skills
-var siteDistance = 25;
+var telescopeLevel = 0;
+var siteDistance = (telescopeLevel*2)+1;
 
 function initMap(){
   //init siteMap to be the size of map, with every value set to 0 (not visible)
@@ -312,12 +313,45 @@ function makeGlass(){
       fireState = 0;
       addMessage("Made 1 Glass");
       $('#glassInventory').text("Glass    : " + glass);
+      $('#sandInventory').text("Sand    : " + sand);
       activateButton(2, "makeGlassProgress", "Make Glass");
     }else{
       addMessage("Fire isn't Hot Enough!");
     }
   }else{
     addMessage("Not Enough Sand!");
+  }
+
+  //if we have glass, and we have wood, the upgradeTelescope button should show
+  if(glass > 0 && wood > 0){
+    $('#upgradeTelescopeButton').show();
+  }
+}
+
+/* Called when user clicks Upgrade Telescope button
+   Checks if there is enough wood
+   Checks if there is enough glass
+   If so: removes (telescopeLevel+1)*2 glass
+          removes (telescopeLevel+1)*10 wood
+          adds 1 telescopeLevel
+          increases siteDistance
+*/
+function upgradeTelescope(){
+  if(wood >= ((telescopeLevel+1) * 10)){
+    if(glass >= ((telescopeLevel+1) * 2)){
+      glass = glass - ((telescopeLevel+1)*2);
+      wood = wood - ((telescopeLevel+1)*10);
+      telescopeLevel++
+      siteDistance = (telescopeLevel * 2) + 1;
+      $('#telescopeInventory').text("Tele :   " + telescopeLevel);
+      $('#glassInventory').text("Glass :   " + glass);
+      $('#woodInventory').text("Wood :   " + wood);
+      printMap(); 
+    }else{
+      addMessage("Not Enough Glass!");
+    }
+  }else{
+    addMessage("Not Enough Wood!");
   }
 }
 

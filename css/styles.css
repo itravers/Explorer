@@ -53,7 +53,7 @@
 
 
 .buttonContainer{
-  width:150px;
+  width:200px;
   background-color: #7cb57f;
   margin:10px;
 }
@@ -75,5 +75,6 @@
   display:none;
 }
 
-#makeGlassProgress{
+#upgradeTelescopeButton{
+  display:none;
 }

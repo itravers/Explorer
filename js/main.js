@@ -203,8 +203,8 @@ function movePlayer(dir){
   //player succeeds in move
   if(success == true){
     //if we are moving onto a stoneWalkWay 's' we won't decrease water or increase movesSinceLastFireStateChange
-    var x = currentPos[1];
-    var y = currentPos[0];
+    var x = currentPos[0];
+    var y = currentPos[1];
     if(map[x][y] != 's'){  
       //increase movesSinceLastFireStateChange
       movesSinceLastFireStateChange++;

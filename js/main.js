@@ -236,7 +236,6 @@ function unPrintPlayer(){
   var height = (canvas.height)/map[0].length;
   var width = (canvas.width)/map.length;
   var color = getColorFromMapPosition(currentPos[1], currentPos[0]);
-  addMessage(currentPos[1] + " " + currentPos[0]); 
  
   ctx.fillStyle = color;
   ctx.fillRect(currentPos[1]*width, currentPos[0]*height, width, height);
@@ -300,7 +299,7 @@ function lightFire(){
   if(wood >= 1){
     if(fireLighting == false){
       activateButton(2, "lightFireProgress", "Stoke Fire");
-      addMessage("Fire Started");
+      if(fireState == 0)addMessage("Fire Started");//only say fire started when fire is started
       wood--;
       $("#woodInventory").text("Wood   : " + wood);
       if(fireState < 4){

@@ -131,6 +131,8 @@ function getItem(){
     $("#rockInventory").text("Rock    : " + rock);
     addMessage("Got 1 Rock");
     printMap();
+  }else if(map[x][y] == 's'){//trying to get stone walk way
+    addMessage("Can't get Walkway!");
   }else if(map[x][y] == "0"){
     addMessage("No Item to get");
   }
@@ -142,8 +144,8 @@ function getItem(){
     $('#makeGlassButton').show();
   }
 
-  //placeStoneWalkButton should only show if we have some rocks
-  if(rock > 0){
+  //placeStoneWalkButton should only show if we have some rocks and rockHammer has been crafted
+  if(rock > 0 && rockHammer == 1){
     $('#placeStoneWalkButton').show();
   }
 
@@ -200,17 +202,26 @@ function movePlayer(dir){
  
   //player succeeds in move
   if(success == true){
-    //increase movesSinceLastFireStateChange
-    movesSinceLastFireStateChange++;
-    //check water, if exists remove 1
-    if(water > 0){
-      water--;
-      $('#waterInventory').text("Water    : " + water);
-    }else{//there is no water left, remove 1 health from player 
-      //health--;
-      //$('#healthInventory').text("Health    : " + health);
-      injurePlayer();
-      addMessage("You are thirsty.");
+    //if we are moving onto a stoneWalkWay 's' we won't decrease water or increase movesSinceLastFireStateChange
+    var x = currentPos[1];
+    var y = currentPos[0];
+    if(map[x][y] != 's'){  
+      //increase movesSinceLastFireStateChange
+      movesSinceLastFireStateChange++;
+      //check water, if exists remove 1
+      if(water > 0){
+        water--;
+        $('#waterInventory').text("Water    : " + water);
+      }else{//there is no water left, remove 1 health from player 
+        //health--;
+        //$('#healthInventory').text("Health    : " + health);
+        injurePlayer();
+        addMessage("You are thirsty.");
+      }
+    }else{//we are moving onto a stoneWalkway 's'
+      //don't change movesSinceLastFireChange
+      //don't change Water
+      //we don't actually need to do anything in this else
     }
 
     //if the fire is out, take 1 health every time the player moves
@@ -296,6 +307,8 @@ function getColorFromMapPosition(x, y){
     return '#c2b280';
   }else if(map[x][y] == 'R'){
     return '#aaa7a4';
+  }else if(map[x][y] == 's'){
+    return '#565656';
   }
 }
 
@@ -353,7 +366,26 @@ function addMessage(msg){
    if player is moving from a Stone Walkway
 */ 
 function placeStoneWalk(){
-
+  var x = currentPos[0];
+  var y = currentPos[1];
+  var rocksNeeded = 5;
+  if(rockHammer == 1){
+    if(rock >= rocksNeeded){
+      if(map[x][y] == '0'){
+        activateButton(2, "placeStoneWalkProgress", "Place Stone Walkway");
+        map[x][y] = 's';
+        printMap();
+        rock = rock - rocksNeeded;
+        $('#rockInventory').text("Rocks : " + rock);
+      }else{
+        addMessage("Location Isn't Empty!");
+      }
+    }else{
+      addMessage("Need " +rocksNeeded+ " Rocks!");
+    }
+  }else{
+    addMessage("Need a Rock Hammer!");
+  }
 }
 
 /* Creates a rock hammer and adds it to players inventory
@@ -374,6 +406,9 @@ function createRockHammer(){
          $('#rockHammerInventory').text("Rock Hammer : Crafted");
          $('#rockInventory').text("Rocks : " + rock);
          $('#woodInventory').text("Wood  : " + wood);
+ 
+         //if we have rocks, and since we just crafted a rock hammer, placeStoneWalkButton becomes visibile
+         $('#placeStoneWalkButton').show();
       }else{
         addMessage("You've already crafted a Rock Hammer");
       }
@@ -484,7 +519,7 @@ function activateButton(interval, buttonID, text) {
       clearInterval(id);
       elem.innerHTML = text;//bring back text once done
       //if is createRockHammerProgress, we want to hide createRockHammerButton now
-        $('#createRockHammerButton').toggle();
+      if(buttonID == 'createRockHammerProgress')  $('#createRockHammerButton').hide();
       if(buttonID == 'lightFireProgress')fireLighting = false;
     } else {
       width++; 

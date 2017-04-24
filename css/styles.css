@@ -1,6 +1,8 @@
 #mapCanvas{
   border: 1px solid black;
   margin: 20px;
+  height: 600px;
+  width: 600px;
 }
 
 .msgListContainer{

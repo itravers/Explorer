@@ -170,6 +170,8 @@ function movePlayer(dir){
   //printPlayer(); 
   //printMap instead of printPlayer as printPlayer left weird lines, when squares are really small
   printMap();
+
+    
  
   //player succeeds in move
   if(success == true){
@@ -180,15 +182,17 @@ function movePlayer(dir){
       water--;
       $('#waterInventory').text("Water    : " + water);
     }else{//there is no water left, remove 1 health from player 
-      health--;
-      $('#healthInventory').text("Health    : " + health);
+      //health--;
+      //$('#healthInventory').text("Health    : " + health);
+      injurePlayer();
       addMessage("You are thirsty.");
     }
 
     //if the fire is out, take 1 health every time the player moves
     if(fireState == 0){
-      health--;
-      $('#healthInventory').text("Health    : " + health);
+      //health--;
+      //$('#healthInventory').text("Health    : " + health);
+      injurePlayer();
       addMessage("You're Freezing!");
     }
 
@@ -207,6 +211,23 @@ function movePlayer(dir){
       killPlayer();
     }
   }
+}
+
+/* Removes 1 health from player
+   Flashes red on the screen to let
+   player know they are being injured
+*/
+function injurePlayer(){
+  health--
+  $('#healthInventory').text("Health    : " + health);
+  //flash red on map
+  var canvas = document.getElementById('mapCanvas');
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'red';
+  ctx.fillRect(0,0, canvas.width, canvas.height);
+  setTimeout(function(){
+    printMap();
+  }, 10);
 }
 
 function killPlayer(){

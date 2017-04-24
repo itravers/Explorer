@@ -55,7 +55,7 @@ var fireLighting = false;
 var health = 100000;
 var wood = 100;
 var water = 10000;
-var sand = 0;
+var sand = 100;
 var glass = 0;
 
 //skills
@@ -123,6 +123,14 @@ function getItem(){
   }else if(map[x][y] == "0"){
     addMessage("No Item to get");
   }
+
+  //update Buttons when inventory is adequate
+
+  //makeGlassButton should only show if we have some sand
+  if(sand > 0){
+    $('#makeGlassButton').show();
+  }
+
 }
 
 function movePlayer(dir){
@@ -304,6 +312,7 @@ function makeGlass(){
       fireState = 0;
       addMessage("Made 1 Glass");
       $('#glassInventory').text("Glass    : " + glass);
+      activateButton(2, "makeGlassProgress", "Make Glass");
     }else{
       addMessage("Fire isn't Hot Enough!");
     }
@@ -341,16 +350,18 @@ function activateButton(interval, buttonID, text) {
   var elem = document.getElementById(buttonID);   
   var width = 10;
   var id = setInterval(frame, interval);
+  elem.innerHTML = "";//get rid of text while going
   elem.style.width = width;
-  fireLighting = true;
+  if(buttonID == 'lightFireProgress')fireLighting = true;
   function frame() {
     if (width >= 100) {
       clearInterval(id);
-      fireLighting = false;
+      elem.innerHTML = text;//bring back text once done
+      if(buttonID == 'lightFireProgress')fireLighting = false;
     } else {
       width++; 
       elem.style.width = width + '%'; 
-      elem.innerHTML = text;
+      //elem.innerHTML = text;
     }
   }
 }

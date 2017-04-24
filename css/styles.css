@@ -70,3 +70,10 @@
   line-height: 30px;
   color:white;
 }
+
+#makeGlassButton{
+  display:none;
+}
+
+#makeGlassProgress{
+}

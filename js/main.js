@@ -1,6 +1,7 @@
 $(document).ready(function(){
   initMap();
   printMap();
+  $('#healthInventory').text("Health  : " + health);
 });
 
 $(function() {
@@ -24,24 +25,41 @@ $(function() {
 var map;
 
 //state
-var currentPos = [0, 1];
+var currentPos = [0, 0];
 var fireState = 0;
+var movesSinceLastFireStateChange = 0;
 var fireLighting = false;
 
 //inventory
+var health = 100;
 var wood = 0;
+var water = 0;
 
 function initMap(){
 map = [
-['W', '0', 'W', '0', '0'],
-['0', 'W', '0', '0', '0'],
-['0', '0', '0', '0', '0'],
-['0', '0', '0', '0', '0'],
-['W', '0', 'W', '0', '0']
+['A', 'A', 'A', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['W', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', 'A', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
 ];
 
-printFireState(fireState);
-
+  printFireState(fireState);
 }
 
 function printFireState(state){
@@ -72,9 +90,15 @@ function getItem(){
   if(map[x][y] == "W"){
     map[x][y] = "0";//replace with nothing
     wood++; //add 1 wood to inventory
-    $("#woodInventory").text("Wood  : " + wood);
+    $("#woodInventory").text("Wood    : " + wood);
     addMessage("Got 1 Wood");
     printMap();//reprint the map
+  }else if(map[x][y] == "A"){
+    map[x][y] = "0";
+    water=water+10;
+    $("#waterInventory").text("Water   : " + water);
+    addMessage("Got 10 Water");
+    printMap();
   }else if(map[x][y] == "0"){
     addMessage("No Item to get");
   }
@@ -82,33 +106,81 @@ function getItem(){
 
 function movePlayer(dir){
   unPrintPlayer();
+  var success = false;
   if(dir == "up"){
-    if(currentPos[1] == 0){
+    if(currentPos[0] == 0){
       addMessage("Can't go up now");
     }else{
-      currentPos[1]--;
+      currentPos[0]--;
+      success = true;
     }
   }else if(dir == "left"){
-    if(currentPos[0] == 0){
+    if(currentPos[1] == 0){
       addMessage("Can't go left now");
     }else{
-      currentPos[0]--;
+      currentPos[1]--;
+      success = true;
     }
   }else if(dir == "right"){
-    if(currentPos[0] >= map.length-1){
+    if(currentPos[1] >= map.length-1){
       addMessage("Can't go right now");
     }else{
-      currentPos[0]++;
+      currentPos[1]++;
+      success = true;
     }
   }else if(dir == "down"){
-    if(currentPos[1] >= map[0].length-1){
+    if(currentPos[0] >= map[0].length-1){
       addMessage("Can't go down now");
     }else{
-      currentPos[1]++;
+      currentPos[0]++;
+      success = true;
     }
   }
   
-  printPlayer();
+  printPlayer(); 
+ 
+  //player succeeds in move
+  if(success == true){
+    //increase movesSinceLastFireStateChange
+    movesSinceLastFireStateChange++;
+    //check water, if exists remove 1
+    if(water > 0){
+      water--;
+      $('#waterInventory').text("Water    : " + water);
+    }else{//there is no water left, remove 1 health from player 
+      health--;
+      $('#healthInventory').text("Health    : " + health);
+      addMessage("You are thirsty.");
+    }
+
+    //if the fire is out, take 1 health every time the player moves
+    if(fireState == 0){
+      health--;
+      $('#healthInventory').text("Health    : " + health);
+      addMessage("You're Freezing!");
+    }
+
+    //decrease fire state if movesSinceLastFireStateChange > 10;
+    if(movesSinceLastFireStateChange > 10){
+      if(fireState > 0){
+        fireState--;
+        movesSinceLastFireStateChange = 0;
+        printFireState(fireState);
+      }
+    }
+
+    if(health <= 0){
+      health = 0;
+      $('#healthInventory').text("Health    : " + health);
+      killPlayer();
+    }
+  }
+}
+
+function killPlayer(){
+  addMessage("You Died!!!");
+  alert("You Died!!!");
+  location.reload();
 }
 
 function unPrintPlayer(){
@@ -119,7 +191,7 @@ function unPrintPlayer(){
   var color = getColorFromMapPosition(currentPos[0], currentPos[1]);
   
   ctx.fillStyle = color;
-  ctx.fillRect(currentPos[0]*width, currentPos[1]*height, width, height);
+  ctx.fillRect(currentPos[1]*width, currentPos[0]*height, width, height);
 }
 
 //only prints the player without reprinting map
@@ -128,8 +200,8 @@ function printPlayer(){
   var ctx = canvas.getContext('2d');
   var height = canvas.height/map[0].length;
   var width = canvas.width/map.length;
-  ctx.fillStyle = 'blue';
-  ctx.fillRect(currentPos[0]*width, currentPos[1]*height, width, height);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(currentPos[1]*width, currentPos[0]*height, width, height);
 
 }
 
@@ -138,6 +210,8 @@ function getColorFromMapPosition(x, y){
     return 'white';
   }else if(map[x][y] == 'W'){
     return 'brown'
+  }else if(map[x][y] == 'A'){
+    return 'blue';
   }
 }
 
@@ -149,7 +223,7 @@ function printMap(){
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
       ctx.fillStyle = getColorFromMapPosition(i, j);
-      ctx.fillRect(i*width, j*height, width, height);
+      ctx.fillRect(j*width, i*height, width, height);
     }
   }
 
@@ -176,6 +250,7 @@ function lightFire(){
       $("#woodInventory").text("Wood   : " + wood);
       if(fireState < 4){
         fireState++;
+        movesSinceLastFireStateChange = 0;
         printFireState(fireState);
       }else{
         addMessage("You're wasting wood!");

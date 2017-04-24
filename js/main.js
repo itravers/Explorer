@@ -56,6 +56,7 @@ var health = 100000;
 var wood = 100;
 var water = 10000;
 var sand = 0;
+var glass = 0;
 
 //skills
 var siteDistance = 25;
@@ -288,6 +289,33 @@ function addMessage(msg){
   $('#msgList').prepend("<li>"+msg+"</li>");
 }
 
+/* Called when the user clicks Make Glass button
+   checks if there is enough sand
+   checks if the fire is fully stoked
+   if so, add glass to the users inventory
+   removes 10 sand
+   decreases fire to barely burning.
+*/
+function makeGlass(){
+  if(sand >= 10){
+    if(fireState == 4){
+      glass++;
+      sand = sand - 10;
+      fireState = 0;
+      addMessage("Made 1 Glass");
+      $('#glassInventory').text("Glass    : " + glass);
+    }else{
+      addMessage("Fire isn't Hot Enough!");
+    }
+  }else{
+    addMessage("Not Enough Sand!");
+  }
+}
+
+
+/* Called when user clicks StokeFire Button
+   Checks if there is wood and updates the fires state.
+*/
 function lightFire(){
   //alert("lighting fire");
   if(wood >= 1){

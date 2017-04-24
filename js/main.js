@@ -51,9 +51,9 @@ var movesSinceLastFireStateChange = 0;
 var fireLighting = false;
 
 //inventory
-var health = 100;
-var wood = 0;
-var water = 0;
+var health = 100000;
+var wood = 100;
+var water = 10000;
 
 function initMap(){
 
@@ -233,10 +233,11 @@ function killPlayer(){
 function unPrintPlayer(){
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
-  var height = canvas.height/map[0].length;
-  var width = canvas.width/map.length;
-  var color = getColorFromMapPosition(currentPos[0], currentPos[1]);
-  
+  var height = (canvas.height)/map[0].length;
+  var width = (canvas.width)/map.length;
+  var color = getColorFromMapPosition(currentPos[1], currentPos[0]);
+  addMessage(currentPos[1] + " " + currentPos[0]); 
+ 
   ctx.fillStyle = color;
   ctx.fillRect(currentPos[1]*width, currentPos[0]*height, width, height);
 }
@@ -247,7 +248,7 @@ function printPlayer(){
   var ctx = canvas.getContext('2d');
   var height = canvas.height/map[0].length;
   var width = canvas.width/map.length;
-  ctx.fillStyle = 'black';
+  ctx.fillStyle = 'red';
   ctx.fillRect(currentPos[1]*width, currentPos[0]*height, width, height);
 
  
@@ -269,6 +270,11 @@ function printMap(){
   var ctx = canvas.getContext('2d');
   var height = canvas.height/map[0].length;
   var width = canvas.width/map.length;
+
+  //first we blank the map
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
       ctx.fillStyle = getColorFromMapPosition(i, j);

@@ -45,6 +45,7 @@ $(function() {
 var map;
 
 //state
+var siteMap; //tells us which coordinates of the map are visible
 var currentPos = [0, 0];
 var fireState = 0;
 var movesSinceLastFireStateChange = 0;
@@ -59,6 +60,18 @@ var water = 10000;
 var siteDistance = 2;
 
 function initMap(){
+  //init siteMap to be the size of map, with every value set to 0 (not visible)
+  siteMap = new Array();
+  var subArray = new Array();
+  for(var i = 0; i < map.length; i++){
+    subArray = new Array();
+    for(var j = 0; j< map[i].length; j++){
+      subArray.push(0);
+    }
+    siteMap.push(subArray);
+  } 
+
+
   printFireState(fireState);
 }
 
@@ -241,9 +254,11 @@ function printMap(){
     for(var j = 0; j < map[i].length; j++){
       var mapPosX = j;
       var mapPosY = i;
-      if(getDistance(mapPosX, mapPosY, currentX, currentY) <= siteDistance){
+      if((getDistance(mapPosX, mapPosY, currentX, currentY) <= siteDistance) || siteMap[j][i] == 1){
         ctx.fillStyle = getColorFromMapPosition(i, j);
         ctx.fillRect(j*width, i*height, width+1, height+1);
+        //make this location visible in siteMap
+        siteMap[j][i] = 1;
       }else{
         ctx.fillStyle = 'black';
         ctx.fillRect(j*width, i*height, width+1, height+1);

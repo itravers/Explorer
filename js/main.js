@@ -24,21 +24,46 @@ $(function() {
 var map;
 
 //state
-var currentPos = [4, 0];
+var currentPos = [0, 1];
+var fireState = 0;
 var fireLighting = false;
 
 //inventory
 var wood = 0;
 
 function initMap(){
-  map = [
-['0', '0', '0', '0', '0'],
+map = [
+['W', '0', 'W', '0', '0'],
 ['0', 'W', '0', '0', '0'],
 ['0', '0', '0', '0', '0'],
 ['0', '0', '0', '0', '0'],
-['0', '0', 'W', '0', '0']
+['W', '0', 'W', '0', '0']
 ];
 
+printFireState(fireState);
+
+}
+
+function printFireState(state){
+  var message;
+  switch(state){
+    case 0:
+      message = "The Fire is Out!";
+      break;
+    case 1:
+      message = "The Fire is Barely Burning.";
+      break;
+    case 2:
+      message = "The Fire is Burning.";
+      break;
+    case 3:
+      message = "The Fire is Roasting!";
+      break;
+    case 4:
+      message = "The Fire is Fully Stoked!";
+      break;
+  }
+  addMessage(message);
 }
 
 function getItem(){
@@ -47,6 +72,7 @@ function getItem(){
   if(map[x][y] == "W"){
     map[x][y] = "0";//replace with nothing
     wood++; //add 1 wood to inventory
+    $("#woodInventory").text("Wood  : " + wood);
     addMessage("Got 1 Wood");
     printMap();//reprint the map
   }else if(map[x][y] == "0"){
@@ -134,7 +160,7 @@ function printMap(){
 function addMessage(msg){
   //if there are more than 20 messages already, remove the last one
   if($('#msgList li').length >= 25){
-    $('#msgList li').first().remove();
+    $('#msgList li').last().remove();
   }
 
   $('#msgList').prepend("<li>"+msg+"</li>");
@@ -144,9 +170,16 @@ function lightFire(){
   //alert("lighting fire");
   if(wood >= 1){
     if(fireLighting == false){
-      activateButton(2, "lightFireProgress", "Light Fire");
+      activateButton(2, "lightFireProgress", "Stoke Fire");
       addMessage("Fire Started");
       wood--;
+      $("#woodInventory").text("Wood   : " + wood);
+      if(fireState < 4){
+        fireState++;
+        printFireState(fireState);
+      }else{
+        addMessage("You're wasting wood!");
+      }
     }
   }else{
     addMessage("Not Enough Wood");

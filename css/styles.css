@@ -7,11 +7,22 @@
   float:left;
 }
 
-#msgList{
+.invListContainer{
+  float: right;
+}
+
+.gameList{
   list-style: none;
   margin:0;
   padding:10;
-  width: 175px;
+}
+
+#msgList{
+  width: 250px;
+}
+
+#inventoryList{
+  width:150px;
 }
 
 /*
@@ -40,6 +51,7 @@
 .buttonContainer{
   width:150px;
   background-color: #7cb57f;
+  margin:20px;
 }
 
 .progressButton{

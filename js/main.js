@@ -58,6 +58,7 @@ var water = 10000;
 var sand = 10000;
 var glass = 10000;
 var rock = 10000;
+var ironOre = 10000;
 
 //items
 var rockHammer = 0;
@@ -130,6 +131,12 @@ function getItem(){
     rock++;
     $("#rockInventory").text("Rock    : " + rock);
     addMessage("Got 1 Rock");
+    printMap();
+  }else if(map[x][y] == 'I'){//got iron ore
+    map[x][y] = "0";
+    ironOre++;
+    $('#ironOreInventory').text("Iron Ore : " + ironOre);
+    addMessage("Got 1 Iron Ore");
     printMap();
   }else if(map[x][y] == 's'){//trying to get stone walk way
     addMessage("Can't get Walkway!");
@@ -299,16 +306,18 @@ function printPlayer(){
 function getColorFromMapPosition(x, y){
   if(map[x][y] == '0'){
     return 'white';
-  }else if(map[x][y] == 'W'){
+  }else if(map[x][y] == 'W'){//wood
     return '#663300'
-  }else if(map[x][y] == 'A'){
+  }else if(map[x][y] == 'A'){//water
     return '#79BDEA';
-  }else if(map[x][y] == 'S'){
+  }else if(map[x][y] == 'S'){//sand
     return '#c2b280';
-  }else if(map[x][y] == 'R'){
+  }else if(map[x][y] == 'R'){//rock
     return '#aaa7a4';
-  }else if(map[x][y] == 's'){
+  }else if(map[x][y] == 's'){//stone Walk way
     return '#565656';
+  }else if(map[x][y] == 'I'){//ironOre
+    return '#c6c131';
   }
 }
 

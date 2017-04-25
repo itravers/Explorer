@@ -52,21 +52,22 @@ var movesSinceLastFireStateChange = 0;
 var fireLighting = false;
 
 //inventory
-var health = 100000;
-var wood = 10000;
-var water = 10000;
-var sand = 10000;
-var glass = 10000;
-var rock = 10000;
-var ironOre = 10000;
-var iron = 9;
+var health = 100;
+var wood = 0;
+var water = 0;
+var sand = 0;
+var glass = 0;
+var rock = 0;
+var ironOre = 0;
+var iron = 0;
 
 //items
 var rockHammer = 0;
 var ironAx = 0;
+var bucket = 0;
 
 //skills
-var telescopeLevel = 50;
+var telescopeLevel = 0;
 var siteDistance = (telescopeLevel*2)+1;
 
 function initMap(){
@@ -125,9 +126,14 @@ function getItem(){
     printMap();//reprint the map
   }else if(map[x][y] == "A"){
     map[x][y] = "0";
-    water=water+10;
+    if(bucket == 1){//if we have a bucket, collect 50 water at once, else collect 10
+      water=water+50;
+      addMessage("Got 50 Water");
+    }else{
+      water=water+10;
+      addMessage("Got 10 Water");
+    }
     $("#waterInventory").text("Water   : " + water);
-    addMessage("Got 10 Water");
     printMap();
   }else if(map[x][y] == "S"){//got sand
     map[x][y] = "0";
@@ -415,6 +421,46 @@ function placeStoneWalk(){
   }
 }
 
+/*
+   Called by user pressing Create Bucket button
+   Create a bucket and adds it to players inventory
+   If: has ironAx
+     : has enough iron
+     : has rockHammer
+     : has enough water
+*/
+function createBucket(){
+  var ironNeeded = 10;
+  var waterNeeded = 100;
+  if(iron >= ironNeeded){
+    if(water >= waterNeeded){
+      if(rockHammer == 1){
+        if(ironAx == 1){
+          //requirements satisfied
+          bucket = 1;
+          iron = iron - ironNeeded;
+          water = water - waterNeeded;
+ 
+          addMessage("Crafted Bucket!");
+          $('#bucketInventory').text("Bucket : Crafted");
+          $('#ironInventory').text("Iron : " + iron);
+          $('#waterInventory').text("Water : " + water);
+
+          activateButton(2, "createBucketProgress", "Create Bucket");
+        }else{
+          addMessage("Need Iron Ax!");
+        }
+      }else{
+        addMessage("Need Rock Hammer!");
+      }
+    }else{
+      addMessage("Need " + waterNeeded + " Water!");
+    }
+  }else{
+    addMessage("Need " + ironNeeded + " Iron!");
+  }
+}
+
 /* Creates an Iron Ax and adds it to players inventory
    IF: Player has enough wood
      : Player has enough iron
@@ -519,6 +565,12 @@ function smeltOre(){
         if(iron > 0 && rockHammer == 1 && wood > 0 && ironAx == 0){
           $('#createIronAxButton').show();
         }
+
+        //show createBucketButton if we have iron, a rockHammer, an ironAx, and water
+        if(iron > 0 && rockHammer == 1 && ironAx == 1 && water > 0 && bucket == 0){
+          $('#createBucketButton').show();
+        }
+
       }else{
         addMessage("Fire Isn't Hot Enough!");
       }   
@@ -630,6 +682,7 @@ function activateButton(interval, buttonID, text) {
       //if is createRockHammerProgress, we want to hide createRockHammerButton now
       if(buttonID == 'createRockHammerProgress')  $('#createRockHammerButton').hide();
       if(buttonID == 'createIronAxProgress')  $('#createIronAxButton').hide();
+      if(buttonID == 'createBucketProgress')  $('#createBucketButton').hide();
       if(buttonID == 'lightFireProgress')fireLighting = false;
     } else {
       width++; 

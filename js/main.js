@@ -1,28 +1,15 @@
+var map;
+
+/* Called when the page is loaded
+   1. Create a map
+   2. Print that map
+*/
 $(document).ready(function(){
-  $.get("maps/map1.txt", function(data){
-  var oneLineMap = data;
- // alert("length: " + oneLineMap.length);
-  //alert(oneLineMap);
-  map = new Array();
-  var subArray = new Array();
-  for(var i = 0; i< oneLineMap.length; i++){
-    if(oneLineMap[i] == '\n'){
-      map.push(subArray);
-      subArray = new Array();
-  //    console.log(i+" newLine");
-    }else{
-      subArray.push(oneLineMap[i]);
-    }
-    //console.log(oneLineMap[i]);
-  }
-  console.log("map loaded");
   initMap();
   printMap();
 });
  // initMap();
   //printMap();
-  $('#healthInventory').text("Health  : " + health);
-});
 
 $(function() {
    $(window).keypress(function(e) {
@@ -42,7 +29,6 @@ $(function() {
    });
 });
 
-var map;
 
 //state
 var siteMap; //tells us which coordinates of the map are visible
@@ -71,6 +57,34 @@ var telescopeLevel = 0;
 var siteDistance = (telescopeLevel*2)+1;
 
 function initMap(){
+  $.ajax({
+    url : "maps/map1.txt",
+    type : "get",
+    async: false,
+    success : function(data){
+      var oneLineMap = data;
+      map = new Array();
+      var subArray = new Array();
+      for(var i = 0; i< oneLineMap.length; i++){
+        if(oneLineMap[i] == '\n'){
+          map.push(subArray);
+          subArray = new Array();
+      //    console.log(i+" newLine");
+        }else{
+          subArray.push(oneLineMap[i]);
+        }
+        //console.log(oneLineMap[i]);
+      }
+
+    },
+    error : function(){ 
+      console.log("Could not load Map.");
+    }
+  });
+
+ // if(!fileRead) setInterval(function(){console.log("waiting for map read")}, 100);
+  console.log("starting to load sitemap");
+  $('#healthInventory').text("Health  : " + health);
   //init siteMap to be the size of map, with every value set to 0 (not visible)
   siteMap = new Array();
   var subArray = new Array();

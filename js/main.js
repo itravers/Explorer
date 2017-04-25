@@ -481,14 +481,16 @@ function printMap(){
   printPlayer(); //Draw player piece after rest of map has been drawn
 }
 
+/* Add a message to the top of players message list
+   If list is too long, remove oldest message from list. */
 function addMessage(msg){
-  //if there are more than 20 messages already, remove the last one
+  //if there are more than x messages already, remove the last one
   if($('#msgList li').length >= 25){
     $('#msgList li').last().remove();
   }
-
   $('#msgList').prepend("<li>"+msg+"</li>");
 }
+
 
 /* Places a stone walkway at players current location on map
    IF: Nothing else is at location
@@ -518,6 +520,7 @@ function placeStoneWalk(){
     addMessage("Need a Rock Hammer!");
   }
 }
+
 
 /*
    Called by user pressing Create Bucket button

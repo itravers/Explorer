@@ -562,6 +562,7 @@ function createBucket(){
   }
 }
 
+
 /* Creates an Iron Ax and adds it to players inventory
    IF: Player has enough wood
      : Player has enough iron
@@ -604,6 +605,7 @@ function createIronAx(){
   }
 }
 
+
 /* Creates a rock hammer and adds it to players inventory
    IF: Player has enough rocks
     &: Player has enough wood
@@ -634,8 +636,8 @@ function createRockHammer(){
   }else{
     addMessage("Need " +rocksNeeded+ " Rocks!");
   }
-
 }
+
 
 /* Called when the user clicks smeltoreButton
    Check if there is enough ironOre
@@ -683,6 +685,7 @@ function smeltOre(){
   }
 }
 
+
 /* Called when the user clicks Make Glass button
    checks if there is enough sand
    checks if the fire is fully stoked
@@ -713,6 +716,7 @@ function makeGlass(){
     $('#upgradeTelescopeButton').show();
   }
 }
+
 
 /* Called when user clicks Upgrade Telescope button
    Checks if there is enough wood
@@ -769,18 +773,22 @@ function lightFire(){
   }
 }
 
+/* Makes the buttons countdown timer work.
+   Certain buttons disappear after they are done activating */
 function activateButton(interval, buttonID, text) {
   var elem = document.getElementById(buttonID);   
   var width = 10;
   var id = setInterval(frame, interval);
   elem.innerHTML = "";//get rid of text while going
   elem.style.width = width;
+  updateButtons(); //Update all the buttons based on inventory levels
   if(buttonID == 'lightFireProgress')fireLighting = true;
   function frame() {
     if (width >= 100) {
       clearInterval(id);
       elem.innerHTML = text;//bring back text once done
-      //if is createRockHammerProgress, we want to hide createRockHammerButton now
+
+      //Hide certain buttons after they are done being activated
       if(buttonID == 'createRockHammerProgress')  $('#createRockHammerButton').hide();
       if(buttonID == 'createIronAxProgress')  $('#createIronAxButton').hide();
       if(buttonID == 'createBucketProgress')  $('#createBucketButton').hide();
@@ -788,8 +796,6 @@ function activateButton(interval, buttonID, text) {
     } else {
       width++; 
       elem.style.width = width + '%'; 
-      //elem.innerHTML = text;
     }
   }
 }
-

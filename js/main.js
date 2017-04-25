@@ -437,13 +437,15 @@ function getColorFromMapPosition(x, y){
 }
 
 
-//Returns the distance between two points
+/* Returns the distance between two coordinates on the map.
+   Uses the pythagorean theorem. */
 function getDistance(x1, y1, x2, y2){
   var returnVal = ((x2-x1)*(x2-x1))+((y2-y1)*(y2-y1));
   returnVal = Math.sqrt(returnVal);
   return returnVal;
 }
 
+/* Prints the map as an HTML5 canvas */
 function printMap(){
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
@@ -451,28 +453,32 @@ function printMap(){
   var width = canvas.width/map.length;
   var currentX = currentPos[1];
   var currentY = currentPos[0];
+
   //first we blank the map
   ctx.fillStyle = 'white';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+  
+  //Loop through the map and print a specific color at each coordinate
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
       var mapPosX = j;
       var mapPosY = i;
+      
+      /* Check how far away from player this coordinate is, only print it if it is within siteDistance
+         or if player has already seen it before. Mark everything we print as seen. */
       if((getDistance(mapPosX, mapPosY, currentX, currentY) <= siteDistance) || siteMap[j][i] == 1){
         ctx.fillStyle = getColorFromMapPosition(i, j);
         ctx.fillRect(j*width, i*height, width+1, height+1);
+
         //make this location visible in siteMap
         siteMap[j][i] = 1;
-      }else{
+      }else{ //Coordinate is too far away from player, and we have not seen it before, print black
         ctx.fillStyle = 'black';
         ctx.fillRect(j*width, i*height, width+1, height+1);
       }
     }
   }
-
-  //draw player
-  printPlayer();
+  printPlayer(); //Draw player piece after rest of map has been drawn
 }
 
 function addMessage(msg){

@@ -50,6 +50,7 @@ var iron = 0;      /* The iron the player has left. */
 var rockHammer = 0;
 var ironAx = 0;
 var bucket = 0;
+var rockIronShovel = 0;
 
 /* Keep track of the players skill stats. */
 var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
@@ -198,8 +199,14 @@ function getItem(){
   }else if(map[x][y] == "S"){ //There is sand at the players current location
     map[x][y] = "0"; //Replace Sand with Nothing
 
-    sand++;
-    addMessage("Got 1 Sand");
+    //If we have a rockIronShovel get 10 sand, else get 1
+    if(rockIronShovel == 1){
+      sand = sand + 10;
+      addMessage("Got 10 Sand");
+    }else{
+      sand++;
+      addMessage("Got 1 Sand");
+    }
 
     $("#sandInventory").text("Sand     : " + sand); //Update sand in inventory list
     printMap(); //Reprint the Map
@@ -268,6 +275,11 @@ function updateButtons(){
   //If we have some iron ore, show the smelt ore button
   if(ironOre > 0){
     $('#smeltOreButton').show();
+  }
+
+  //Show createRockIronShovelButton if we have iron, rocks, wood, glass, and no rockIronShovel yet
+  if(iron > 0 && rock > 0 && wood > 0 && glass > 0 && rockIronShovel == 0){
+    $('#createRockIronShovelButton').show();
   }
 }
 
@@ -521,6 +533,57 @@ function placeStoneWalk(){
   }
 }
 
+
+/* Called by user pressing createRockIronShovelButton
+   Create a Rock Iron Shovel and add it to players inventory
+   IF: has enough iron
+     : has enough rock
+     : has enough wood
+     : has enough glass
+     : doesn't have rockIronShovel already
+*/
+function createRockIronShovel(){
+  var ironNeeded = 10;
+  var rockNeeded = 50;
+  var woodNeeded = 100;
+  var glassNeeded = 20;
+
+  if(iron >= ironNeeded){
+    if(rock >= rockNeeded){
+      if(wood >= woodNeeded){
+        if(glass >= glassNeeded){
+          if(rockIronShovel == 0){
+            //requirements satisfied, made a rockIronShovel
+            rockIronShovel = 1;
+            iron = iron - ironNeeded;
+            rock = rock - rockNeeded;
+            wood = wood - woodNeeded;
+            glass = glass - glassNeeded;
+
+            addMessage("Crafted a Rock Iron Shovel!");
+            $("#rockIronShovelInventory").text("RockIronShovel: Crafted");
+            $("#ironInventory").text("Iron : " + iron);
+            $("#rockInventory").text("Rock : " + rock);
+            $("#woodInventory").text("Wood : " + wood);
+            $("#glassInventory").text("Glass : " + glass);
+          
+            activateButton(2, "createRockIronShovelProgress", "Create Rock Iron Shovel");
+          }else{
+            addMessage("Already Crafted Rock Iron Shovel!");
+          }
+        }else{
+          addMessage("Need " + glassNeeded + " Glass!");
+        }
+      }else{
+        addMessage("Need " + woodNeeded + " Wood!");
+      }
+    }else{
+      addMessage("Need " + rockNeeded + " Rock!");
+    }
+  }else{
+    addMessage("Need " + ironNeeded + " Iron!");
+  }
+}
 
 /*
    Called by user pressing Create Bucket button
@@ -792,6 +855,7 @@ function activateButton(interval, buttonID, text) {
       if(buttonID == 'createRockHammerProgress')  $('#createRockHammerButton').hide();
       if(buttonID == 'createIronAxProgress')  $('#createIronAxButton').hide();
       if(buttonID == 'createBucketProgress')  $('#createBucketButton').hide();
+      if(buttonID == 'createRockIronShovelProgress')  $('#createRockIronShovelButton').hide();
       if(buttonID == 'lightFireProgress')fireLighting = false;
     } else {
       width++; 

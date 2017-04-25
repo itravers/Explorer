@@ -365,13 +365,14 @@ function movePlayer(dir){
   }
 }
 
+
 /* Removes 1 health from player
    Flashes red on the screen to let
-   player know they are being injured
-*/
+   player know they are being injured */
 function injurePlayer(){
   health--
   $('#healthInventory').text("Health    : " + health);
+
   //flash red on map
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
@@ -382,12 +383,16 @@ function injurePlayer(){
   }, 10);
 }
 
+/** Kill the player, and reset the game. */
 function killPlayer(){
   addMessage("You Died!!!");
-  alert("You Died!!!");
+  alert("You Died, Death is Permenant!");
   location.reload();
 }
 
+/* Remove the players piece from the map.
+   Finds what should be printed on the map
+   and prints that instead. */
 function unPrintPlayer(){
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
@@ -399,7 +404,8 @@ function unPrintPlayer(){
   ctx.fillRect(currentPos[1]*width, currentPos[0]*height, width, height);
 }
 
-//only prints the player without reprinting map
+
+/* Prints the player piece on the map. */
 function printPlayer(){
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
@@ -407,11 +413,11 @@ function printPlayer(){
   var width = canvas.width/map.length;
   ctx.fillStyle = 'red';
   ctx.fillRect(currentPos[1]*width, currentPos[0]*height, width, height);
-
- 
-
 }
 
+
+/* Returns a specific HEX COLOR based on what is
+   located at a certain position on the map. */
 function getColorFromMapPosition(x, y){
   if(map[x][y] == '0'){
     return 'white';
@@ -429,6 +435,7 @@ function getColorFromMapPosition(x, y){
     return '#c6c131';
   }
 }
+
 
 //Returns the distance between two points
 function getDistance(x1, y1, x2, y2){

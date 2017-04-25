@@ -63,6 +63,7 @@ var iron = 0;
 
 //items
 var rockHammer = 0;
+var ironAx = 0;
 
 //skills
 var telescopeLevel = 50;
@@ -407,6 +408,48 @@ function placeStoneWalk(){
   }
 }
 
+/* Creates an Iron Ax and adds it to players inventory
+   IF: Player has enough wood
+     : Player has enough iron
+     : Player has enough water
+     : Player has a rock hammer
+*/
+function createIronAx(){
+  var woodNeeded = 50;
+  var ironNeeded = 10;
+  var waterNeeded = 50;
+  
+  if(wood >= woodNeeded){
+    if(iron >= ironNeeded){
+      if(water >= waterNeeded){
+        if(rockHammer == 1){
+          //Requirements succeeded
+          ironAx = 1;
+          wood = wood - woodNeeded;
+          iron = iron - ironNeeded;
+          water = water - waterNeeded;
+         
+          addMessage("Crafted an Iron Ax!");
+          $('#ironInventory').text("Iron : " + iron);
+          $('#waterInventory').text("Water : " + water);
+          $('#ironAxInventory').text("Iron Ax : Crafted");
+        //  $('#ironAxButton').hide(); 
+
+          activateButton(2, "createIronAxProgress", "Create IronAx");
+        }else{
+          addMessage("Need a Rock Hammer!");
+        }
+      }else{
+        addMessage("Need " + waterNeeded + " Water!");
+      }
+    }else{
+      addMessage("Need " + ironNeeded + " Iron!");
+    }
+  }else{
+    addMessage("Need " + woodNeeded + " Wood!");
+  }
+}
+
 /* Creates a rock hammer and adds it to players inventory
    IF: Player has enough rocks
     &: Player has enough wood
@@ -464,6 +507,11 @@ function smeltOre(){
         $('#ironOreInventory').text("Iron Ore : " + ironOre);
         $('#ironInventory').text("Iron : " + iron);
         activateButton(2, "smeltOreProgress", "Smelt Ore");
+
+        //show createIronAxButton if we have iron, a rockHammer and wood, and we havn't already crafted an ironAx
+        if(iron > 0 && rockHammer == 1 && wood > 0 && ironAx == 0){
+          $('#createIronAxButton').show();
+        }
       }else{
         addMessage("Fire Isn't Hot Enough!");
       }   
@@ -574,6 +622,7 @@ function activateButton(interval, buttonID, text) {
       elem.innerHTML = text;//bring back text once done
       //if is createRockHammerProgress, we want to hide createRockHammerButton now
       if(buttonID == 'createRockHammerProgress')  $('#createRockHammerButton').hide();
+      if(buttonID == 'createIronAxProgress')  $('#createIronAxButton').hide();
       if(buttonID == 'lightFireProgress')fireLighting = false;
     } else {
       width++; 

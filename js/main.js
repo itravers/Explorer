@@ -150,11 +150,17 @@ function printFireState(state){
   addMessage(message);//Print to player message.
 }
 
+/* Called when player attempts to get an item.
+   Examines what is on the map at the players current location
+   and decides if player is able to get something from that location
+   if he is that item is added to inventory.*/
 function getItem(){
+  //get the players current position in x,y
   var x = currentPos[0];
   var y = currentPos[1];
-  if(map[x][y] == "W"){
-    map[x][y] = "0";//replace with nothing
+
+  if(map[x][y] == "W"){ //There is wood at players current location
+    map[x][y] = "0"; //Replace wood with nothing
 
     //if we have an iron ax, we get 10 wood at once, else we only get 1 wood at a time
     if(ironAx == 1){
@@ -164,25 +170,33 @@ function getItem(){
       wood++;
       addMessage("Got 1 Wood!");
     }
-    $("#woodInventory").text("Wood    : " + wood);
-    printMap();//reprint the map
-  }else if(map[x][y] == "A"){
-    map[x][y] = "0";
-    if(bucket == 1){//if we have a bucket, collect 50 water at once, else collect 10
-      water=water+50;
-      addMessage("Got 50 Water");
+
+    $("#woodInventory").text("Wood    : " + wood); //Update wood in inventory list
+    printMap(); //Reprint the Map
+
+  }else if(map[x][y] == "A"){ //There is water at players current location. (A for aqua)
+    map[x][y] = "0"; //Replace water with nothing
+
+    if(bucket == 1){ //if we have a bucket, collect 20 water at once, else collect 5
+      water=water+20;
+      addMessage("Got 20 Water");
     }else{
-      water=water+10;
-      addMessage("Got 10 Water");
+      water=water+5;
+      addMessage("Got 5 Water");
     }
-    $("#waterInventory").text("Water   : " + water);
-    printMap();
-  }else if(map[x][y] == "S"){//got sand
-    map[x][y] = "0";
+
+    $("#waterInventory").text("Water   : " + water); //Update water in inventory list
+    printMap(); //Reprint the Map
+
+  }else if(map[x][y] == "S"){ //There is sand at the players current location
+    map[x][y] = "0"; //Replace Sand with Nothing
+
     sand++;
-    $("#sandInventory").text("Sand     : " + sand);
     addMessage("Got 1 Sand");
-    printMap();
+
+    $("#sandInventory").text("Sand     : " + sand); //Update sand in inventory list
+    printMap(); //Reprint the Map
+
   }else if(map[x][y] == 'R'){//got rock
     map[x][y] = "0";
     rock++;

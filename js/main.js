@@ -126,6 +126,8 @@ function initMap(){
   printFireState(fireState); //Print the state of the fire to the player messages.
 }
 
+/* Prints state of the fire (string) to player messages
+   based on fireState (int) */
 function printFireState(state){
   var message;
   switch(state){
@@ -145,7 +147,7 @@ function printFireState(state){
       message = "The Fire is Fully Stoked!";
       break;
   }
-  addMessage(message);
+  addMessage(message);//Print to player message.
 }
 
 function getItem(){

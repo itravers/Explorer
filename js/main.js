@@ -1,4 +1,57 @@
+/* 2dArray The map that will be loaded from file and displayed to user. */
 var map;
+
+/* 2dArray that Cooresponds with the map.
+   Each area that has already been seen by player
+   will be marked with a 1. When we print map we will
+   know that player has already seen these coordinates
+   so we will go head and display that part of the map*/
+var siteMap;
+
+/* State Variables - Keeps track of stuff in the game. */
+
+/* Keep Track of the players current position.*/
+var currentPos = [0, 0];
+
+/* Keeps track of the fires current state:
+   0: The Fire is Out
+   1: The fire is barely burning
+   2: The fire is burning
+   3: The fire is roasting
+   4: The fire is fully stoked */
+var fireState = 0;
+
+/* Keeps track of the amount of moves the player has made
+   since the last time the fire's state has changed
+   This only increments if the player is NOT moving
+   onto a stone pathway.
+   This is used to decrease the state of the fire as the
+   player moves around. */
+var movesSinceLastFireStateChange = 0;
+
+/* Keeps track if the fire is currently being stroked,
+   so we can't press the Stroke Fire button repeatedly at once
+*/
+var fireLighting = false;
+
+//inventory
+var health = 100;
+var wood = 0;
+var water = 0;
+var sand = 0;
+var glass = 0;
+var rock = 0;
+var ironOre = 0;
+var iron = 0;
+
+//items
+var rockHammer = 0;
+var ironAx = 0;
+var bucket = 0;
+
+//skills
+var telescopeLevel = 0;
+var siteDistance = (telescopeLevel*2)+1;
 
 /* Called when the page is loaded
    1. Create a map
@@ -30,31 +83,6 @@ $(function() {
 });
 
 
-//state
-var siteMap; //tells us which coordinates of the map are visible
-var currentPos = [0, 0];
-var fireState = 0;
-var movesSinceLastFireStateChange = 0;
-var fireLighting = false;
-
-//inventory
-var health = 100;
-var wood = 0;
-var water = 0;
-var sand = 0;
-var glass = 0;
-var rock = 0;
-var ironOre = 0;
-var iron = 0;
-
-//items
-var rockHammer = 0;
-var ironAx = 0;
-var bucket = 0;
-
-//skills
-var telescopeLevel = 0;
-var siteDistance = (telescopeLevel*2)+1;
 
 function initMap(){
   $.ajax({

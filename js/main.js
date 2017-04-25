@@ -59,7 +59,7 @@ var sand = 10000;
 var glass = 10000;
 var rock = 10000;
 var ironOre = 10000;
-var iron = 0;
+var iron = 9;
 
 //items
 var rockHammer = 0;
@@ -112,9 +112,16 @@ function getItem(){
   var y = currentPos[1];
   if(map[x][y] == "W"){
     map[x][y] = "0";//replace with nothing
-    wood++; //add 1 wood to inventory
+
+    //if we have an iron ax, we get 10 wood at once, else we only get 1 wood at a time
+    if(ironAx == 1){
+      wood = wood + 10;
+      addMessage("Got 10 Wood!");
+    }else{
+      wood++;
+      addMessage("Got 1 Wood!");
+    }
     $("#woodInventory").text("Wood    : " + wood);
-    addMessage("Got 1 Wood");
     printMap();//reprint the map
   }else if(map[x][y] == "A"){
     map[x][y] = "0";

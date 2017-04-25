@@ -59,6 +59,7 @@ var sand = 10000;
 var glass = 10000;
 var rock = 10000;
 var ironOre = 10000;
+var iron = 0;
 
 //items
 var rockHammer = 0;
@@ -437,6 +438,41 @@ function createRockHammer(){
     addMessage("Need " +rocksNeeded+ " Rocks!");
   }
 
+}
+
+/* Called when the user clicks smeltoreButton
+   Check if there is enough ironOre
+   Check if fireState is 4 (fully stoked)
+   Check if there is enough water
+   if so: remove Items used to smelt and update inventory
+        : Add 1 iron and update inventory
+*/
+function smeltOre(){
+  var ironOreNeeded = 10;
+  var waterNeeded = 10;
+  if(ironOre >= ironOreNeeded){
+    if(water >= waterNeeded){
+      if(fireState == 4){
+        //all requirements satisfied
+        water = water - waterNeeded;
+        ironOre = ironOre - ironOreNeeded;
+        iron++;
+        fireState = 0;
+
+        addMessage("Got 1 Iron");
+        $('#waterInventory').text("Water  : " + water);
+        $('#ironOreInventory').text("Iron Ore : " + ironOre);
+        $('#ironInventory').text("Iron : " + iron);
+        activateButton(2, "smeltOreProgress", "Smelt Ore");
+      }else{
+        addMessage("Fire Isn't Hot Enough!");
+      }   
+    }else{
+      addMessage("Need " +waterNeeded+ " Water!");
+    }
+  }else{
+    addMessage("Need " +ironOreNeeded+ " Iron Ore!");
+  }
 }
 
 /* Called when the user clicks Make Glass button

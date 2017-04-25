@@ -132,12 +132,16 @@ function getItem(){
     $("#rockInventory").text("Rock    : " + rock);
     addMessage("Got 1 Rock");
     printMap();
-  }else if(map[x][y] == 'I'){//got iron ore
-    map[x][y] = "0";
-    ironOre++;
-    $('#ironOreInventory').text("Iron Ore : " + ironOre);
-    addMessage("Got 1 Iron Ore");
-    printMap();
+  }else if(map[x][y] == 'I'){//try to get Iron ore
+    if(rockHammer == 1){//must have rock hammer to get Iron Ore
+      map[x][y] = "0";
+      ironOre++;
+      $('#ironOreInventory').text("Iron Ore : " + ironOre);
+      addMessage("Got 1 Iron Ore");
+      printMap();
+    }else{
+      addMessage("Need Rock Hammer to get Iron Ore");
+    }
   }else if(map[x][y] == 's'){//trying to get stone walk way
     addMessage("Can't get Walkway!");
   }else if(map[x][y] == "0"){
@@ -156,7 +160,7 @@ function getItem(){
     $('#placeStoneWalkButton').show();
   }
 
-  //if we have rocks and wood and no rockhammer
+  //if we have rocks and wood and no rockhammer show the createRockHammerButton
   if(rock > 0 && wood > 0 && rockHammer != 1){
     $('#createRockHammerButton').show();
   }
@@ -164,6 +168,11 @@ function getItem(){
   //show that rock hammer has been crafted in inventory if rockHammer = 1
   if(rockHammer == 1){
     $('#rockHammerInventory').text("Rock Hammer : Crafted");
+  }
+
+  //If we have some iron ore, show the smelt ore button
+  if(ironOre > 0){
+    $('#smeltOreButton').show();
   }
 
 }

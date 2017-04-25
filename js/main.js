@@ -34,24 +34,26 @@ var movesSinceLastFireStateChange = 0;
 */
 var fireLighting = false;
 
-//inventory
-var health = 100;
-var wood = 0;
-var water = 0;
-var sand = 0;
-var glass = 0;
-var rock = 0;
-var ironOre = 0;
-var iron = 0;
+/* Keep track of the players inventory. */
+var health = 100;  /* The amount of heath the player has left. */
+var wood = 0;      /* The wood the player has left. */
+var water = 0;     /* The water the player has left. */
+var sand = 0;      /* The sand the player has left. */
+var glass = 0;     /* The glass the player has left. */
+var rock = 0;      /* The rocks the player has left. */
+var ironOre = 0;   /* The ironOre the player has left. */
+var iron = 0;      /* The iron the player has left. */
 
-//items
+/* Keep track of the permanent items the player has in inventory.
+   0: Player does not have item
+   1: Player does have item */
 var rockHammer = 0;
 var ironAx = 0;
 var bucket = 0;
 
-//skills
-var telescopeLevel = 0;
-var siteDistance = (telescopeLevel*2)+1;
+/* Keep track of the players skill stats. */
+var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
+var siteDistance = (telescopeLevel*2)+1;      /* The distance away from player they are able to see. */
 
 /* Called when the page is loaded
    1. Create a map
@@ -61,13 +63,11 @@ $(document).ready(function(){
   initMap();
   printMap();
 });
- // initMap();
-  //printMap();
 
+/* Listen for key presses*/
 $(function() {
    $(window).keypress(function(e) {
        var key = e.which;
-       //alert("key " + key + " pressed");
        if(key == 119){//up pressed
          movePlayer("up");
        }else if(key == 97){//left pressed

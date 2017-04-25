@@ -55,6 +55,7 @@ var bucket = 0;
 var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
 var siteDistance = (telescopeLevel*2)+1;      /* The distance away from player they are able to see. */
 
+
 /* Called when the page is loaded
    1. Create a map
    2. Print that map
@@ -63,6 +64,7 @@ $(document).ready(function(){
   initMap();
   printMap();
 });
+
 
 /* Listen for key presses*/
 $(function() {
@@ -81,6 +83,7 @@ $(function() {
        }
    });
 });
+
 
 /* Loads the map from file
     Initializes the siteMap to all 0's
@@ -126,6 +129,7 @@ function initMap(){
   printFireState(fireState); //Print the state of the fire to the player messages.
 }
 
+
 /* Prints state of the fire (string) to player messages
    based on fireState (int) */
 function printFireState(state){
@@ -149,6 +153,7 @@ function printFireState(state){
   }
   addMessage(message);//Print to player message.
 }
+
 
 /* Called when player attempts to get an item.
    Examines what is on the map at the players current location
@@ -233,7 +238,13 @@ function getItem(){
   }
 
   //update Buttons when inventory is adequate to show that button
+  updateButtons();
+}
 
+
+/* Updates visibility of button if there is adequate 
+   inventory levels to show those buttons. */
+function updateButtons(){
   //makeGlassButton should only show if we have some sand
   if(sand > 0){
     $('#makeGlassButton').show();
@@ -260,46 +271,56 @@ function getItem(){
   }
 }
 
+/* Moves player from current position to new position
+   based on dir (string).
+   If player tries to move off of map, we don't let him. */
 function movePlayer(dir){
-  unPrintPlayer();
-  var success = false;
-  if(dir == "up"){
+  unPrintPlayer(); //Remove Player's Piece from map
+
+  var success = false; //Used to judge the success of our move
+
+  if(dir == "up"){ //Player tries to move up
+
     if(currentPos[0] == 0){
-      addMessage("Can't go up now");
+      addMessage("Can't go up now"); //Player is already at top of map
     }else{
-      currentPos[0]--;
+      currentPos[0]--; //Player moves up successfully.
       success = true;
     }
-  }else if(dir == "left"){
+
+  }else if(dir == "left"){ //Player tries to move left
+
     if(currentPos[1] == 0){
-      addMessage("Can't go left now");
+      addMessage("Can't go left now"); //Player is already completely to the left of map
     }else{
-      currentPos[1]--;
+      currentPos[1]--; //Player moves left successfully
       success = true;
     }
-  }else if(dir == "right"){
+
+  }else if(dir == "right"){ //Player tries to move right
+
     if(currentPos[1] >= map.length-1){
-      addMessage("Can't go right now");
+      addMessage("Can't go right now"); //Player is already completely right of map.
     }else{
-      currentPos[1]++;
+      currentPos[1]++; //Player moves right successfully
       success = true;
     }
-  }else if(dir == "down"){
+
+  }else if(dir == "down"){ //Player tries to move down
+
     if(currentPos[0] >= map[0].length-1){
-      addMessage("Can't go down now");
+      addMessage("Can't go down now"); //Player is already at bottom of map.
     }else{
-      currentPos[0]++;
+      currentPos[0]++; //Player moves down successfully.
       success = true;
     }
   }
   
-  //printPlayer(); 
-  //printMap instead of printPlayer as printPlayer left weird lines, when squares are really small
-  printMap();
+  printMap(); //Reprint the Map after player moved
 
-    
- 
-  //player succeeds in move
+  /* Player succedded in moving.
+     We check if player is moving onto a Stone Walk Way,
+     If they ARE NOT: We remove 1 water, and add 1 to movesSinceLastFireStateChange */
   if(success == true){
     //if we are moving onto a stoneWalkWay 's' we won't decrease water or increase movesSinceLastFireStateChange
     var x = currentPos[0];
@@ -312,15 +333,9 @@ function movePlayer(dir){
         water--;
         $('#waterInventory').text("Water    : " + water);
       }else{//there is no water left, remove 1 health from player 
-        //health--;
-        //$('#healthInventory').text("Health    : " + health);
         injurePlayer();
         addMessage("You are thirsty.");
       }
-    }else{//we are moving onto a stoneWalkway 's'
-      //don't change movesSinceLastFireChange
-      //don't change Water
-      //we don't actually need to do anything in this else
     }
 
     //if the fire is out, take 1 health every time the player moves

@@ -153,7 +153,9 @@ function printFireState(state){
 /* Called when player attempts to get an item.
    Examines what is on the map at the players current location
    and decides if player is able to get something from that location
-   if he is that item is added to inventory.*/
+   if he is that item is added to inventory.
+   We also update the visibility of several button when player tries
+   to get an item */
 function getItem(){
   //get the players current position in x,y
   var x = currentPos[0];
@@ -197,29 +199,40 @@ function getItem(){
     $("#sandInventory").text("Sand     : " + sand); //Update sand in inventory list
     printMap(); //Reprint the Map
 
-  }else if(map[x][y] == 'R'){//got rock
-    map[x][y] = "0";
+  }else if(map[x][y] == 'R'){ //There is rock at the players current location
+    map[x][y] = "0"; //Replace rock with nothing.
+
     rock++;
-    $("#rockInventory").text("Rock    : " + rock);
     addMessage("Got 1 Rock");
-    printMap();
-  }else if(map[x][y] == 'I'){//try to get Iron ore
-    if(rockHammer == 1){//must have rock hammer to get Iron Ore
-      map[x][y] = "0";
+
+    $("#rockInventory").text("Rock    : " + rock); //Update rock in inventory list
+    printMap(); //Reprint the Map
+
+  }else if(map[x][y] == 'I'){ //There is iron at players current location
+
+    if(rockHammer == 1){ //must have rock hammer to get Iron Ore
+      map[x][y] = "0"; //Replace Iron Ore with nothing
+
       ironOre++;
-      $('#ironOreInventory').text("Iron Ore : " + ironOre);
       addMessage("Got 1 Iron Ore");
-      printMap();
-    }else{
+
+      $('#ironOreInventory').text("Iron Ore : " + ironOre); //Update Iron Ore in inventory list
+      printMap(); //Reprint the Map
+
+    }else{ //Player does not have Rock hammer, and wasn't able to get ironOre
       addMessage("Need Rock Hammer to get Iron Ore");
+
     }
-  }else if(map[x][y] == 's'){//trying to get stone walk way
+
+  }else if(map[x][y] == 's'){ //There is a Stone Walkway at players current location
     addMessage("Can't get Walkway!");
-  }else if(map[x][y] == "0"){
+
+  }else if(map[x][y] == "0"){ //There is nothing at the players current location
     addMessage("No Item to get");
+
   }
 
-  //update Buttons when inventory is adequate
+  //update Buttons when inventory is adequate to show that button
 
   //makeGlassButton should only show if we have some sand
   if(sand > 0){
@@ -245,7 +258,6 @@ function getItem(){
   if(ironOre > 0){
     $('#smeltOreButton').show();
   }
-
 }
 
 function movePlayer(dir){

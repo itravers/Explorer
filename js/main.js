@@ -320,7 +320,11 @@ function movePlayer(dir){
 
   /* Player succedded in moving.
      We check if player is moving onto a Stone Walk Way,
-     If they ARE NOT: We remove 1 water, and add 1 to movesSinceLastFireStateChange */
+     If they ARE NOT: We remove 1 water, and add 1 to movesSinceLastFireStateChange 
+     If Player has no water, we remove 1 health
+     If fireState is 0, we remove 1 health 
+     If movesSinceLastFireStateChange is > 20, we decrease the state of the fire
+     If players health is gone, we kill player */
   if(success == true){
     //if we are moving onto a stoneWalkWay 's' we won't decrease water or increase movesSinceLastFireStateChange
     var x = currentPos[0];
@@ -340,13 +344,11 @@ function movePlayer(dir){
 
     //if the fire is out, take 1 health every time the player moves
     if(fireState == 0){
-      //health--;
-      //$('#healthInventory').text("Health    : " + health);
       injurePlayer();
       addMessage("You're Freezing!");
     }
 
-    //decrease fire state if movesSinceLastFireStateChange > 10;
+    //decrease fire state and reset movesSinceLastStateChange
     if(movesSinceLastFireStateChange > 20){
       if(fireState > 0){
         fireState--;
@@ -354,7 +356,7 @@ function movePlayer(dir){
         printFireState(fireState);
       }
     }
-
+    //Check player health, and kill player if needed
     if(health <= 0){
       health = 0;
       $('#healthInventory').text("Health    : " + health);

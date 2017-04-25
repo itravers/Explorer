@@ -82,9 +82,12 @@ $(function() {
    });
 });
 
-
-
+/* Loads the map from file
+    Initializes the siteMap to all 0's
+    Prints Initial player health under inventory list
+*/
 function initMap(){
+  //load map from file, synchronously
   $.ajax({
     url : "maps/map1.txt",
     type : "get",
@@ -97,22 +100,19 @@ function initMap(){
         if(oneLineMap[i] == '\n'){
           map.push(subArray);
           subArray = new Array();
-      //    console.log(i+" newLine");
         }else{
           subArray.push(oneLineMap[i]);
         }
-        //console.log(oneLineMap[i]);
       }
-
     },
     error : function(){ 
       console.log("Could not load Map.");
     }
   });
 
- // if(!fileRead) setInterval(function(){console.log("waiting for map read")}, 100);
-  console.log("starting to load sitemap");
+  //print initial inventory
   $('#healthInventory').text("Health  : " + health);
+
   //init siteMap to be the size of map, with every value set to 0 (not visible)
   siteMap = new Array();
   var subArray = new Array();
@@ -122,10 +122,8 @@ function initMap(){
       subArray.push(0);
     }
     siteMap.push(subArray);
-  } 
-
-
-  printFireState(fireState);
+  }
+  printFireState(fireState); //Print the state of the fire to the player messages.
 }
 
 function printFireState(state){

@@ -5,5 +5,5 @@ lightFire        wood:1
 ironAx           wood:50       iron:10       water:50       rockHammer:1    ironAx:0
 bucket           iron:10       water:100     bucket:0       rockHammer:1    ironAx:1
 rockIronShovel   iron:10       rock:50       wood:100       glass:20        rockIronShovel:0
-stoneWalk        rock:5
+stoneWalk        rock:5        rockHammer:1
 upgradeTelescope wood:10       glass:2 

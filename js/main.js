@@ -657,25 +657,17 @@ function addMessage(msg){
    if player is moving from a Stone Walkway
 */ 
 function placeStoneWalk(){
-  var x = currentPos[0];
-  var y = currentPos[1];
-  var rocksNeeded = 5;
-  if(rockHammer == 1){
-    if(rock >= rocksNeeded){
-      if(map[x][y] == '0'){
-        activateButton(2, "placeStoneWalkProgress", "Place Stone Walkway");
-        map[x][y] = 's';
-        printMap();
-        rock = rock - rocksNeeded;
-        $('#rockInventory').text("Rocks : " + rock);
-      }else{
-        addMessage("Location Isn't Empty!");
-      }
+  if(itemPrereqSatisfied('stoneWalk')){
+
+    if(map[x][y] == '0'){
+    activateButton(2, "placeStoneWalkProgress", "Place Stone Walkway");
+    map[x][y] = 's';
+    printMap();
+    rock = rock - rocksNeeded;
+    $('#rockInventory').text("Rocks : " + rock);
     }else{
-      addMessage("Need " +rocksNeeded+ " Rocks!");
+    addMessage("Location Isn't Empty!");
     }
-  }else{
-    addMessage("Need a Rock Hammer!");
   }
 }
 

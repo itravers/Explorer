@@ -830,8 +830,8 @@ function makeGlass(){
 */
 function upgradeTelescope(){
   if(itemPrereqSatisfied('upgradeTelescope')){
-    glass = glass - itemPrereqs['upgradeTelescope']['glass'];
-      wood = wood - itemPrereqs['upgradeTelescope']['wood'];;
+    glass = glass - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['glass'];
+      wood = wood - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['wood'];;
       telescopeLevel++
       siteDistance = (telescopeLevel * 2) + 1;
       $('#telescopeInventory').text("Tele :   " + telescopeLevel);

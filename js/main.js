@@ -779,38 +779,20 @@ function createBucket(){
      : Player has a rock hammer
 */
 function createIronAx(){
-  var woodNeeded = 50;
-  var ironNeeded = 10;
-  var waterNeeded = 50;
-  
-  if(wood >= woodNeeded){
-    if(iron >= ironNeeded){
-      if(water >= waterNeeded){
-        if(rockHammer == 1){
-          //Requirements succeeded
-          ironAx = 1;
-          wood = wood - woodNeeded;
-          iron = iron - ironNeeded;
-          water = water - waterNeeded;
-         
-          addMessage("Crafted an Iron Ax!");
-          $('#ironInventory').text("Iron : " + iron);
-          $('#waterInventory').text("Water : " + water);
-          $('#ironAxInventory').text("Iron Ax : Crafted");
-        //  $('#ironAxButton').hide(); 
+  if(itemPrereqSatisfied('ironAx')){
 
-          activateButton(2, "createIronAxProgress", "Create IronAx");
-        }else{
-          addMessage("Need a Rock Hammer!");
-        }
-      }else{
-        addMessage("Need " + waterNeeded + " Water!");
-      }
-    }else{
-      addMessage("Need " + ironNeeded + " Iron!");
-    }
-  }else{
-    addMessage("Need " + woodNeeded + " Wood!");
+    //Requirements succeeded
+    ironAx = 1;
+    wood = wood - itemPrereqs['ironAx']['wood'];
+    iron = iron - itemPrereqs['ironAx']['iron'];
+    water = water - itemPrereqs['ironAx']['water'];
+    
+    addMessage("Crafted an Iron Ax!");
+    $('#ironInventory').text("Iron : " + iron);
+    $('#waterInventory').text("Water : " + water);
+    $('#ironAxInventory').text("Iron Ax : Crafted");
+
+    activateButton(2, "createIronAxProgress", "Create IronAx");
   }
 }
 
@@ -820,30 +802,18 @@ function createIronAx(){
     &: Player has enough wood
 */
 function createRockHammer(){
-  var rocksNeeded = 25;
-  var woodNeeded = 50;
-  
-  if(rock >= rocksNeeded){
-    if(wood >= woodNeeded){
-      if(rockHammer == 0){
-         rock = rock - rocksNeeded;
-         wood = wood - woodNeeded;
-         rockHammer = 1;
-         activateButton(2, "createRockHammerProgress", "Create Rock Hammer");
-         $('#rockHammerInventory').text("Rock Hammer : Crafted");
-         $('#rockInventory').text("Rocks : " + rock);
-         $('#woodInventory').text("Wood  : " + wood);
- 
-         //if we have rocks, and since we just crafted a rock hammer, placeStoneWalkButton becomes visibile
-         $('#placeStoneWalkButton').show();
-      }else{
-        addMessage("You've already crafted a Rock Hammer");
-      }
-    }else{
-      addMessage("Need " +woodNeeded+ " Wood!");
-    }
-  }else{
-    addMessage("Need " +rocksNeeded+ " Rocks!");
+  if(itemPrereqSatisfied('rockHammer')){
+
+    rock = rock - itemPrereqs['rockHammer']['rock'];
+    wood = wood - itemPrereqs['rockHammer']['wood'];
+    rockHammer = 1;
+    activateButton(2, "createRockHammerProgress", "Create Rock Hammer");
+    $('#rockHammerInventory').text("Rock Hammer : Crafted");
+    $('#rockInventory').text("Rocks : " + rock);
+    $('#woodInventory').text("Wood  : " + wood);
+    addMessage("Crafted Rock Hammer"); 
+    //if we have rocks, and since we just crafted a rock hammer, placeStoneWalkButton becomes visibile
+    $('#placeStoneWalkButton').show();
   }
 }
 
@@ -856,41 +826,30 @@ function createRockHammer(){
         : Add 1 iron and update inventory
 */
 function smeltOre(){
-  var ironOreNeeded = 10;
-  var waterNeeded = 10;
-  if(ironOre >= ironOreNeeded){
-    if(water >= waterNeeded){
-      if(fireState == 4){
-        //all requirements satisfied
-        water = water - waterNeeded;
-        ironOre = ironOre - ironOreNeeded;
-        iron++;
-        fireState = 0;
-        printFireState(fireState);
-        addMessage("Got 1 Iron");
-        $('#waterInventory').text("Water  : " + water);
-        $('#ironOreInventory').text("Iron Ore : " + ironOre);
-        $('#ironInventory').text("Iron : " + iron);
-        activateButton(2, "smeltOreProgress", "Smelt Ore");
+  if(itemPrereqSatisfied('iron')){
+  
+    //all requirements satisfied
+    water = water - itemPrereqs['iron']['water'];
+    ironOre = ironOre - itemPrereqs['iron']['ironOre'];;
+    iron++;
+    fireState = 0;
+    printFireState(fireState);
+    addMessage("Got 1 Iron");
+    $('#waterInventory').text("Water  : " + water);
+    $('#ironOreInventory').text("Iron Ore : " + ironOre);
+    $('#ironInventory').text("Iron : " + iron);
+    activateButton(2, "smeltOreProgress", "Smelt Ore");
 
-        //show createIronAxButton if we have iron, a rockHammer and wood, and we havn't already crafted an ironAx
-        if(iron > 0 && rockHammer == 1 && wood > 0 && ironAx == 0){
-          $('#createIronAxButton').show();
-        }
 
-        //show createBucketButton if we have iron, a rockHammer, an ironAx, and water
-        if(iron > 0 && rockHammer == 1 && ironAx == 1 && water > 0 && bucket == 0){
-          $('#createBucketButton').show();
-        }
-
-      }else{
-        addMessage("Fire Isn't Hot Enough!");
-      }   
-    }else{
-      addMessage("Need " +waterNeeded+ " Water!");
+    if(iron > 0 && rockHammer == 1 && wood > 0 && ironAx == 0){
+    $('#createIronAxButton').show();
     }
-  }else{
-    addMessage("Need " +ironOreNeeded+ " Iron Ore!");
+    
+    //show createBucketButton if we have iron, a rockHammer, an ironAx, and water
+    if(iron > 0 && rockHammer == 1 && ironAx == 1 && water > 0 && bucket == 0){
+    $('#createBucketButton').show();
+    }
+  
   }
 }
 
@@ -964,24 +923,6 @@ function lightFire(){
       }
     }
   }
-  //alert("lighting fire");
-/*if(wood >= 1){
-    if(fireLighting == false){
-      activateButton(2, "lightFireProgress", "Stoke Fire");
-      if(fireState == 0)addMessage("Fire Started");//only say fire started when fire is started
-      wood--;
-      $("#woodInventory").text("Wood   : " + wood);
-      if(fireState < 4){
-        fireState++;
-        movesSinceLastFireStateChange = 0;
-        printFireState(fireState);
-      }else{
-        addMessage("You're wasting wood!");
-      }
-    }
-  }else{
-    addMessage("Not Enough Wood");
-  }*/
 }
 
 /* Makes the buttons countdown timer work.

@@ -8,6 +8,10 @@ var map;
    so we will go head and display that part of the map*/
 var siteMap;
 
+/* 2d Associative array used to store all the prerequs for each item
+   IE: itemPrereqs["rockHammer"]["rock"] = 25;*/
+var itemPrereqs;
+
 /* State Variables - Keeps track of stuff in the game. */
 
 /* Keep Track of the players current position.*/
@@ -85,6 +89,152 @@ $(function() {
    });
 });
 
+/* Reads prereqs for each item from file and loads them into
+   itemPrereqs, a 2d associative array
+*/
+function initItemPrereqs(){
+  //read from maps/ItemPrereqs.txt
+  $.ajax({
+    url  : "maps/ItemPrereqs.txt",
+    type : "get",
+    async: false,
+    success : function(data){
+      itemPrereqs = {};;
+      var dataLine = '';
+      var dataAllLines = new Array();
+      for(var i = 0; i < data.length; i++){
+        //Break the data up into individual lines
+        if(data[i] == '\n'){//push line read to dataAllLine, and empty dataLine
+          dataAllLines.push(dataLine);
+          dataLine = '';
+        }else{//
+          dataLine += data[i];
+        }
+      } 
+
+      //go through each dataAllLines and construct itemPrereqs
+      for(var i = 0; i < dataAllLines.length; i++){
+        var lineString = dataAllLines[i];
+        lineString = lineString.replace(/\s+/g, " ").trim();//remove extra whitespace
+        var line = lineString.split(" ");
+
+        var itemName = line[0];
+        itemPrereqs[itemName] = {};
+        for(var j = 1; j < line.length; j++){
+         var req = line[j].split(":");//split the preq up into name [0] and num [1]
+         itemPrereqs[itemName][req[0]] = req[1];
+        } 
+      }
+     // console.log("itemPrereqs['ironAx']['wood'] = " + itemPrereqs['ironAx']['wood']);
+      itemPrereqSatisfied('rockHammer');
+
+    },
+    error : function(){
+      console.log("Could not read from ItemPrereqs.txt");
+    }
+  });
+}
+
+function itemPrereqSatisfied(item){
+  var satisfied = true;
+  for(key in itemPrereqs[item]){
+    if(key == 'rock'){
+      if(rock < itemPrereqs[item][key]){
+        addMessage("Need " + (itemPrereqs[item][key] - rock) + " more Rock!");
+        satisfied = false;
+      }
+
+    }else if(key == 'wood'){
+      if(wood < itemPrereqs[item][key]){ 
+        addMessage("Need " + (itemPrereqs[item][key] - wood) + " more Wood!");
+        satisfied = false;
+      }
+
+    }else if(key == 'water'){
+      if(water < itemPrereqs[item][key]){ 
+        addMessage("Need " + (itemPrereqs[item][key] - water) + " more Water!");
+        satisfied = false;
+      }
+
+    }else if(key == 'ironOre'){ 
+      if(ironOre < itemPrereqs[item][key]){ 
+        addMessage("Need " + (itemPrereqs[item][key] - ironOre) + " more Iron Ore!");
+        satisfied = false;
+      }
+
+    }else if(key == 'sand'){
+      if(sand < itemPrereqs[item][key]){
+        addMessage("Need " + (itemPrereqs[item][key] - sand) + " more Sand!");
+        satisfied = false;
+      }
+
+    }else if(key == 'glass'){
+      if(glass < itemPrereqs[item][key]){
+        addMessage("Need " + (itemPrereqs[item][key] - glass) + " more Glass!");
+        satisfied = false;
+      }
+
+    }else if(key == 'iron'){
+      if(iron < itemPrereqs[item][key]){
+        addMessage("Need " + (itemPrereqs[item][key] - iron) + " more Iron!");
+        satisfied = false;
+      }
+
+    }else if(key == 'fireState'){
+      if(fireState < itemPrereqs[item][key]){
+        addMessage("Fire Isn't Hot Enough!");
+        satisfied = false;
+      }
+    }else if(key == 'ironAx'){
+      if(ironAx != itemPrereqs[item][key]){
+        if(ironAx == 0){
+          addMessage("Need Iron Ax!");
+        }else{
+          addMessage("Already have an Iron Ax!");
+        }
+        satisfied = false;
+      }
+    }else if(key == 'bucket'){
+      if(bucket != itemPrereqs[item][key]){
+        if(bucket == 0){
+          addMessage("Need Bucket!");
+        }else{
+          addMessage("Already have a Bucket!");
+        }
+        satisfied = false;
+      }
+    }else if(key == 'rockHammer'){
+      if(rockHammer != itemPrereqs[item][key]){
+        if(rockHammer == 0){
+          addMessage("Need Rock Hammer!");
+        }else{
+          addMessage("Already have Rock Hammer!");
+        }
+        satisfied = false;
+      }
+    }else if(key == 'rockIronShovel'){
+      if(rockIronShovel != itemPrereqs[item][key]){
+        if(rockIronShovel == 0){
+          addMessage("Need Rock Iron Shovel!");
+        }else{
+          addMessage("Already have Rock Iron Shovel!");
+        }
+        satisfied = false;
+      }
+    }
+
+
+
+
+
+
+
+    console.log("key = " + key);
+    console.log("iremPrereqs["+item+"]["+key+"] = " + itemPrereqs[item][key]);
+  }
+  
+  return satisfied; 
+}
 
 /* Loads the map from file
     Initializes the siteMap to all 0's
@@ -128,6 +278,8 @@ function initMap(){
     siteMap.push(subArray);
   }
   printFireState(fireState); //Print the state of the fire to the player messages.
+
+  initItemPrereqs();
 }
 
 
@@ -757,23 +909,17 @@ function smeltOre(){
    decreases fire to barely burning.
 */
 function makeGlass(){
-  var sandNeeded = 10;
-  if(sand >= sandNeeded){
-    if(fireState == 4){
-      glass++;
-      sand = sand - sandNeeded;
+
+  if(itemPrereqSatisfied('glass')){
+    glass++;
+      sand = sand - itemPrereqs['glass']['sand'];
       fireState = 0;
       addMessage("Made 1 Glass");
       $('#glassInventory').text("Glass    : " + glass);
       $('#sandInventory').text("Sand    : " + sand);
       activateButton(2, "makeGlassProgress", "Make Glass");
-    }else{
-      addMessage("Fire isn't Hot Enough!");
-    }
-  }else{
-    addMessage("Need " +sandNeeded+ " Sand!");
-  }
 
+  }
   //if we have glass, and we have wood, the upgradeTelescope button should show
   if(glass > 0 && wood > 0){
     $('#upgradeTelescopeButton').show();

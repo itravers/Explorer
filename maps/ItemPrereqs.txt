@@ -1,0 +1,8 @@
+rockHammer      rock:25       wood:25       rockHammer:0
+iron            ironOre:10    water:10    
+glass           sand:10       fireState:4
+lightFire       wood:1
+ironAx          wood:50       iron:10       water:50       rockHammer:1    ironAx:0
+bucket          iron:10       water:100     bucket:0       rockHammer:1    ironAx:1
+rockIronShovel  iron:10       rock:50       wood:100       glass:20        rockIronShovel:0
+stoneWalk       rock:5 

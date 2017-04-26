@@ -689,45 +689,23 @@ function placeStoneWalk(){
      : doesn't have rockIronShovel already
 */
 function createRockIronShovel(){
-  var ironNeeded = 10;
-  var rockNeeded = 50;
-  var woodNeeded = 100;
-  var glassNeeded = 20;
+  if(itemPrereqSatisfied('rockIronShovel')){
 
-  if(iron >= ironNeeded){
-    if(rock >= rockNeeded){
-      if(wood >= woodNeeded){
-        if(glass >= glassNeeded){
-          if(rockIronShovel == 0){
-            //requirements satisfied, made a rockIronShovel
-            rockIronShovel = 1;
-            iron = iron - ironNeeded;
-            rock = rock - rockNeeded;
-            wood = wood - woodNeeded;
-            glass = glass - glassNeeded;
+    //requirements satisfied, made a rockIronShovel
+    rockIronShovel = 1;
+    iron = iron - itemPrereqs['rockIronShovel']['iron'];
+    rock = rock - itemPrereqs['rockIronShovel']['rock'];
+    wood = wood - itemPrereqs['rockIronShovel']['wood'];
+    glass = glass - itemPrereqs['rockIronShovel']['glass'];
 
-            addMessage("Crafted a Rock Iron Shovel!");
-            $("#rockIronShovelInventory").text("RockIronShovel: Crafted");
-            $("#ironInventory").text("Iron : " + iron);
-            $("#rockInventory").text("Rock : " + rock);
-            $("#woodInventory").text("Wood : " + wood);
-            $("#glassInventory").text("Glass : " + glass);
-          
-            activateButton(2, "createRockIronShovelProgress", "Create Rock Iron Shovel");
-          }else{
-            addMessage("Already Crafted Rock Iron Shovel!");
-          }
-        }else{
-          addMessage("Need " + glassNeeded + " Glass!");
-        }
-      }else{
-        addMessage("Need " + woodNeeded + " Wood!");
-      }
-    }else{
-      addMessage("Need " + rockNeeded + " Rock!");
-    }
-  }else{
-    addMessage("Need " + ironNeeded + " Iron!");
+    addMessage("Crafted a Rock Iron Shovel!");
+    $("#rockIronShovelInventory").text("RockIronShovel: Crafted");
+    $("#ironInventory").text("Iron : " + iron);
+    $("#rockInventory").text("Rock : " + rock);
+    $("#woodInventory").text("Wood : " + wood);
+    $("#glassInventory").text("Glass : " + glass);
+  
+    activateButton(2, "createRockIronShovelProgress", "Create Rock Iron Shovel");
   }
 }
 

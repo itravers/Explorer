@@ -280,6 +280,7 @@ function initMap(){
 /* Prints state of the fire (string) to player messages
    based on fireState (int) */
 function printFireState(state){
+  addMessage('<br>');//add blank line under firestate
   var message;
   switch(state){
     case 0:

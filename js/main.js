@@ -740,35 +740,20 @@ function createRockIronShovel(){
      : has enough water
 */
 function createBucket(){
-  var ironNeeded = 10;
-  var waterNeeded = 100;
-  if(iron >= ironNeeded){
-    if(water >= waterNeeded){
-      if(rockHammer == 1){
-        if(ironAx == 1){
-          //requirements satisfied
-          bucket = 1;
-          iron = iron - ironNeeded;
-          water = water - waterNeeded;
- 
-          addMessage("Crafted Bucket!");
-          $('#bucketInventory').text("Bucket : Crafted");
-          $('#ironInventory').text("Iron : " + iron);
-          $('#waterInventory').text("Water : " + water);
+  if(itemPrereqSatisfied('bucket')){
 
-          activateButton(2, "createBucketProgress", "Create Bucket");
-        }else{
-          addMessage("Need Iron Ax!");
-        }
-      }else{
-        addMessage("Need Rock Hammer!");
-      }
-    }else{
-      addMessage("Need " + waterNeeded + " Water!");
-    }
-  }else{
-    addMessage("Need " + ironNeeded + " Iron!");
-  }
+    //requirements satisfied
+    bucket = 1;
+    iron = iron - itemPrereqs['bucket']['iron'];
+    water = water - itemPrereqs['bucket']['water'];
+    
+    addMessage("Crafted Bucket!");
+    $('#bucketInventory').text("Bucket : Crafted");
+    $('#ironInventory').text("Iron : " + iron);
+    $('#waterInventory').text("Water : " + water);
+    
+    activateButton(2, "createBucketProgress", "Create Bucket");
+  }  
 }
 
 

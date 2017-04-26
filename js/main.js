@@ -136,7 +136,6 @@ function initItemPrereqs(){
 
 function itemPrereqSatisfied(item){
   var satisfied = true;
-  
   addMessage("<br>"); //print a blank line to group prereq messages together
   for(key in itemPrereqs[item]){
     if(key == 'rock'){
@@ -675,7 +674,7 @@ function placeStoneWalk(){
   if(itemPrereqSatisfied('stoneWalk')){
 
     if(map[x][y] == '0'){
-    activateButton(2, "placeStoneWalkProgress", "Place Stone Walkway");
+    activateButton(itemPrereqs['stoneWalk']['time'], "placeStoneWalkProgress", "Place Stone Walkway");
     map[x][y] = 's';
     printMap();
     rock = rock - rocksNeeded;
@@ -707,7 +706,7 @@ function createRockIronShovel(){
     $("#woodInventory").text("Wood : " + wood);
     $("#glassInventory").text("Glass : " + glass);
   
-    activateButton(2, "createRockIronShovelProgress", "Create Rock Iron Shovel");
+    activateButton(itemPrereqs['rockIronShovel']['time'], "createRockIronShovelProgress", "Create Rock Iron Shovel");
   }
 }
 
@@ -728,7 +727,7 @@ function createBucket(){
     $('#ironInventory').text("Iron : " + iron);
     $('#waterInventory').text("Water : " + water);
     
-    activateButton(2, "createBucketProgress", "Create Bucket");
+    activateButton(itemPrereqs['bucket']['time'], "createBucketProgress", "Create Bucket");
   }  
 }
 
@@ -749,7 +748,7 @@ function createIronAx(){
     $('#waterInventory').text("Water : " + water);
     $('#ironAxInventory').text("Iron Ax : Crafted");
 
-    activateButton(2, "createIronAxProgress", "Create IronAx");
+    activateButton(itemPrereqs['ironAx']['time'], "createIronAxProgress", "Create IronAx");
   }
 }
 
@@ -762,7 +761,7 @@ function createRockHammer(){
     rock = rock - itemPrereqs['rockHammer']['rock'];
     wood = wood - itemPrereqs['rockHammer']['wood'];
     rockHammer = 1;
-    activateButton(2, "createRockHammerProgress", "Create Rock Hammer");
+    activateButton(itemPrereqs['rockHammer']['time'], "createRockHammerProgress", "Create Rock Hammer");
     $('#rockHammerInventory').text("Rock Hammer : Crafted");
     $('#rockInventory').text("Rocks : " + rock);
     $('#woodInventory').text("Wood  : " + wood);
@@ -788,7 +787,7 @@ function smeltOre(){
     $('#waterInventory').text("Water  : " + water);
     $('#ironOreInventory').text("Iron Ore : " + ironOre);
     $('#ironInventory').text("Iron : " + iron);
-    activateButton(2, "smeltOreProgress", "Smelt Ore");
+    activateButton(itemPrereqs['iron']['time'], "smeltOreProgress", "Smelt Ore");
 
 
     if(iron > 0 && rockHammer == 1 && wood > 0 && ironAx == 0){
@@ -816,7 +815,7 @@ function makeGlass(){
       addMessage("Made 1 Glass");
       $('#glassInventory').text("Glass    : " + glass);
       $('#sandInventory').text("Sand    : " + sand);
-      activateButton(2, "makeGlassProgress", "Make Glass");
+      activateButton(itemPrereqs['glass']['time'], "makeGlassProgress", "Make Glass");
 
   }
   //if we have glass, and we have wood, the upgradeTelescope button should show
@@ -837,7 +836,7 @@ function upgradeTelescope(){
       $('#telescopeInventory').text("Tele :   " + telescopeLevel);
       $('#glassInventory').text("Glass :   " + glass);
       $('#woodInventory').text("Wood :   " + wood);
-      activateButton(2, "upgradeTelescopeProgress", "Upgrade Telescope");
+      activateButton(itemPrereqs['upgradeTelescope']['time'], "upgradeTelescopeProgress", "Upgrade Telescope");
       printMap(); 
   }
 }
@@ -848,7 +847,7 @@ function upgradeTelescope(){
 function lightFire(){
   if(itemPrereqSatisfied('lightFire')){
     if(fireLighting == false){//we don't want to light fire while it's already lighting 
-      activateButton(2, "lightFireProgress", "Stoke Fire");
+      activateButton(itemPrereqs['lightFire']['time'], "lightFireProgress", "Stoke Fire");
       if(fireState == 0)addMessage("Fire Started");//only say fire started when fire is started
       wood = wood - itemPrereqs['lightFire']['wood'];
       $("#woodInventory").text("Wood   : " + wood);

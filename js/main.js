@@ -224,6 +224,20 @@ function itemPrereqSatisfied(item){
       }
     }
 
+  //check if satisfies upgradeTelescope
+  if(item == 'upgradeTelescope'){
+    var woodNeeded = (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['wood'];
+    var glassNeeded = (telescopeLevel +1) * itemPrereqs['upgradeTelescope']['glass'];
+    if(glass < glassNeeded){
+      satisfied = false;
+      addMessage("Need " + glassNeeded + " more Glass!");
+    }
+    if(wood < woodNeeded){
+      satisfied = false;
+      addMessage("Need " + woodNeeded + " more Wood!"); 
+    }
+  }
+
 //    console.log("key = " + key);
 //    console.log("iremPrereqs["+item+"]["+key+"] = " + itemPrereqs[item][key]);
   }

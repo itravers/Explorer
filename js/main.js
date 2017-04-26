@@ -682,11 +682,6 @@ function placeStoneWalk(){
 
 /* Called by user pressing createRockIronShovelButton
    Create a Rock Iron Shovel and add it to players inventory
-   IF: has enough iron
-     : has enough rock
-     : has enough wood
-     : has enough glass
-     : doesn't have rockIronShovel already
 */
 function createRockIronShovel(){
   if(itemPrereqSatisfied('rockIronShovel')){
@@ -712,10 +707,6 @@ function createRockIronShovel(){
 /*
    Called by user pressing Create Bucket button
    Create a bucket and adds it to players inventory
-   If: has ironAx
-     : has enough iron
-     : has rockHammer
-     : has enough water
 */
 function createBucket(){
   if(itemPrereqSatisfied('bucket')){
@@ -736,10 +727,6 @@ function createBucket(){
 
 
 /* Creates an Iron Ax and adds it to players inventory
-   IF: Player has enough wood
-     : Player has enough iron
-     : Player has enough water
-     : Player has a rock hammer
 */
 function createIronAx(){
   if(itemPrereqSatisfied('ironAx')){
@@ -761,8 +748,6 @@ function createIronAx(){
 
 
 /* Creates a rock hammer and adds it to players inventory
-   IF: Player has enough rocks
-    &: Player has enough wood
 */
 function createRockHammer(){
   if(itemPrereqSatisfied('rockHammer')){
@@ -782,11 +767,6 @@ function createRockHammer(){
 
 
 /* Called when the user clicks smeltoreButton
-   Check if there is enough ironOre
-   Check if fireState is 4 (fully stoked)
-   Check if there is enough water
-   if so: remove Items used to smelt and update inventory
-        : Add 1 iron and update inventory
 */
 function smeltOre(){
   if(itemPrereqSatisfied('iron')){
@@ -818,11 +798,6 @@ function smeltOre(){
 
 
 /* Called when the user clicks Make Glass button
-   checks if there is enough sand
-   checks if the fire is fully stoked
-   if so, add glass to the users inventory
-   removes 10 sand
-   decreases fire to barely burning.
 */
 function makeGlass(){
 
@@ -845,12 +820,6 @@ function makeGlass(){
 
 
 /* Called when user clicks Upgrade Telescope button
-   Checks if there is enough wood
-   Checks if there is enough glass
-   If so: removes (telescopeLevel+1)*2 glass
-          removes (telescopeLevel+1)*10 wood
-          adds 1 telescopeLevel
-          increases siteDistance
 */
 function upgradeTelescope(){
   if(itemPrereqSatisfied('upgradeTelescope')){
@@ -868,7 +837,6 @@ function upgradeTelescope(){
 
 
 /* Called when user clicks StokeFire Button
-   Checks if there is wood and updates the fires state.
 */
 function lightFire(){
   if(itemPrereqSatisfied('lightFire')){

@@ -126,7 +126,6 @@ function initItemPrereqs(){
         } 
       }
      // console.log("itemPrereqs['ironAx']['wood'] = " + itemPrereqs['ironAx']['wood']);
-      itemPrereqSatisfied('rockHammer');
 
     },
     error : function(){
@@ -137,6 +136,8 @@ function initItemPrereqs(){
 
 function itemPrereqSatisfied(item){
   var satisfied = true;
+  
+  addMessage("<br>"); //print a blank line to group prereq messages together
   for(key in itemPrereqs[item]){
     if(key == 'rock'){
       if(rock < itemPrereqs[item][key]){
@@ -223,16 +224,9 @@ function itemPrereqSatisfied(item){
       }
     }
 
-
-
-
-
-
-
-    console.log("key = " + key);
-    console.log("iremPrereqs["+item+"]["+key+"] = " + itemPrereqs[item][key]);
+//    console.log("key = " + key);
+//    console.log("iremPrereqs["+item+"]["+key+"] = " + itemPrereqs[item][key]);
   }
-  
   return satisfied; 
 }
 
@@ -872,7 +866,7 @@ function smeltOre(){
         ironOre = ironOre - ironOreNeeded;
         iron++;
         fireState = 0;
-
+        printFireState(fireState);
         addMessage("Got 1 Iron");
         $('#waterInventory').text("Water  : " + water);
         $('#ironOreInventory').text("Iron Ore : " + ironOre);
@@ -914,6 +908,7 @@ function makeGlass(){
     glass++;
       sand = sand - itemPrereqs['glass']['sand'];
       fireState = 0;
+      printFireState(fireState);
       addMessage("Made 1 Glass");
       $('#glassInventory').text("Glass    : " + glass);
       $('#sandInventory').text("Sand    : " + sand);
@@ -936,12 +931,9 @@ function makeGlass(){
           increases siteDistance
 */
 function upgradeTelescope(){
-  var woodNeeded = ((telescopeLevel+1) * 10);
-  var glassNeeded = ((telescopeLevel+1) * 2);
-  if(wood >= woodNeeded){
-    if(glass >= glassNeeded){
-      glass = glass - glassNeeded;
-      wood = wood - woodNeeded;
+  if(itemPrereqSatisfied('upgradeTelescope')){
+    glass = glass - itemPrereqs['upgradeTelescope']['glass'];
+      wood = wood - itemPrereqs['upgradeTelescope']['wood'];;
       telescopeLevel++
       siteDistance = (telescopeLevel * 2) + 1;
       $('#telescopeInventory').text("Tele :   " + telescopeLevel);
@@ -949,11 +941,6 @@ function upgradeTelescope(){
       $('#woodInventory').text("Wood :   " + wood);
       activateButton(2, "upgradeTelescopeProgress", "Upgrade Telescope");
       printMap(); 
-    }else{
-      addMessage("Need "+ glassNeeded+ " Glass!");
-    }
-  }else{
-    addMessage("Need " +woodNeeded+ " Wood!");
   }
 }
 
@@ -962,8 +949,23 @@ function upgradeTelescope(){
    Checks if there is wood and updates the fires state.
 */
 function lightFire(){
+  if(itemPrereqSatisfied('lightFire')){
+    if(fireLighting == false){//we don't want to light fire while it's already lighting 
+      activateButton(2, "lightFireProgress", "Stoke Fire");
+      if(fireState == 0)addMessage("Fire Started");//only say fire started when fire is started
+      wood = wood - itemPrereqs['lightFire']['wood'];
+      $("#woodInventory").text("Wood   : " + wood);
+      if(fireState < 4){
+        fireState++;
+        movesSinceLastFireStateChange = 0;
+        printFireState(fireState);
+      }else{
+        addMessage("You're wasting wood!");
+      }
+    }
+  }
   //alert("lighting fire");
-  if(wood >= 1){
+/*if(wood >= 1){
     if(fireLighting == false){
       activateButton(2, "lightFireProgress", "Stoke Fire");
       if(fireState == 0)addMessage("Fire Started");//only say fire started when fire is started
@@ -979,7 +981,7 @@ function lightFire(){
     }
   }else{
     addMessage("Not Enough Wood");
-  }
+  }*/
 }
 
 /* Makes the buttons countdown timer work.

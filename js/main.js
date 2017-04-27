@@ -703,6 +703,64 @@ function placeStoneWalk(){
   }
 }
 
+/* Creates an item cooresponding to the given name
+   updates inventories, and updates player messages.
+*/
+function createItem(item){
+  //first update inventories
+  for(key in itemPrereqs[item]){ //loop through the prereqs of item
+    if(key == 'rock'){
+      rock = rock - itemPrereqs[item][key];
+      $('#rockInventory').text("Rock : " + rock);
+      addMessage("Consumed " + itemPrereqs[item][key] + " Rocks!");
+    }else if(key == 'wood'){
+      wood = wood - itemPrereqs[item][key];
+      $('#woodInventory').text("Wood : " + wood);
+      addMessage("Consumed " + itemPrereqs[item][key] + " Wood!");
+    }else if(key == 'water'){ 
+      water = water - itemPrereqs[item][key];
+      $('#waterInventory').text("Water : " + water);
+      addMessage("Consumed " + itemPrereqs[item][key] + " Water!");
+    }else if(key == 'ironOre'){
+      ironOre = ironOre - itemPrereqs[item][key];
+      $('#ironOreInventory').text("Iron Ore : " + ironOre);
+      addMessage("Consumed " + itemPrereqs[item][key] + " Iron Ore!");
+    }else if(key == 'sand'){
+      sand = sand - itemPrereqs[item][key];
+      $('#sandInventory').text("Sand : " + sand);
+      addMessage("Consumed " + itemPrereqs[item][key] + " Sand!");
+    }else if(key == 'glass'){
+      glass = glass - itemPrereqs[item][key];
+      $('#glassInventory').text("Glass : " + glass);
+      addMessage("Consumed " + itemPrereqs[item][key] + " Glass!");
+    }else if(key == 'iron'){
+      iron = iron - itemPrereqs[item][key];
+      $('#ironInventory').text("Iron : " + iron);
+      addMessage("Consumed " + itemPrereqs[item][key] + " Iron!");
+    }
+  }
+
+  //Create the item itself
+  if(item == 'glass'){ //Trying to create glass
+    var numMade = 0;
+    if(glassMachine == 1){
+      glass = glass + 5;
+      numMade = 5;
+    }else{
+      glass++
+      numMade = 1;
+    }
+    addMessage("Made " + numMade + " Glass!");
+    $('#glassInventory').text('Glass : ' + glass);
+  }else if(item == 'iron'){
+    iron++;
+    fireState = 0;
+    printFireState(fireState);
+    addMessage("Made 1 Iron");
+    $('ironInventory').text("Iron : " + iron);
+  }
+}
+
 
 /* called by user pressing createGlassMachineButton
    Create a glass machine and add it to players inventory
@@ -821,17 +879,7 @@ function createRockHammer(){
 */
 function smeltOre(){
   if(itemPrereqSatisfied('iron')){
-  
-    //all requirements satisfied
-    water = water - itemPrereqs['iron']['water'];
-    ironOre = ironOre - itemPrereqs['iron']['ironOre'];;
-    iron++;
-    fireState = 0;
-    printFireState(fireState);
-    addMessage("Got 1 Iron");
-    $('#waterInventory').text("Water  : " + water);
-    $('#ironOreInventory').text("Iron Ore : " + ironOre);
-    $('#ironInventory').text("Iron : " + iron);
+    createItem('iron');  
     activateButton(itemPrereqs['iron']['time'], "smeltOreProgress", "Smelt Ore");
 
 
@@ -851,25 +899,12 @@ function smeltOre(){
 /* Called when the user clicks Make Glass button
 */
 function makeGlass(){
-
   if(itemPrereqSatisfied('glass')){
-    var numMade = 0;
-    if(glassMachine == 1){
-      glass = glass + 5;
-      numMade = 5;
-    }else{
-      glass++;
-      numMade = 1;
-    }
-    sand = sand - itemPrereqs['glass']['sand'];
-    fireState = 0;
-    printFireState(fireState);
-    addMessage("Made " + numMade + " Glass");
-    $('#glassInventory').text("Glass    : " + glass);
-    $('#sandInventory').text("Sand    : " + sand);
+    createItem('glass');
+    fireState = 0; 
     activateButton(itemPrereqs['glass']['time'], "makeGlassProgress", "Make Glass");
-
   }
+
   //if we have glass, and we have wood, the upgradeTelescope button should show
   if(glass > 0 && wood > 0){
     $('#upgradeTelescopeButton').show();
@@ -881,7 +916,8 @@ function makeGlass(){
 */
 function upgradeTelescope(){
   if(itemPrereqSatisfied('upgradeTelescope')){
-    glass = glass - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['glass'];
+      //do this all manually instead of using createItem()
+      glass = glass - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['glass'];
       wood = wood - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['wood'];;
       telescopeLevel++
       siteDistance = (telescopeLevel * 2) + 1;

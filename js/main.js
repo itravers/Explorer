@@ -762,6 +762,14 @@ function createItem(item){
     rockHammer = 1;
     $('#rockHammerInventory').text("Rock Hammer : Crafted");
     addMessage("Crafted Rock Hammer");
+  }else if(item == 'ironAx'){
+    ironAx = 1;
+    $('#ironAxInventory').text("Iron Ax : Crafted");
+    addMessage("Crafted Iron Ax!");
+  }else if(item == 'bucket'){
+    bucket = 1;
+    $('#bucketInventory').text("Bucket : Crafted");
+    addMessage("Crafted Bucket!");
   }
 
 
@@ -825,19 +833,9 @@ function createRockIronShovel(){
 */
 function createBucket(){
   if(itemPrereqSatisfied('bucket')){
-
-    //requirements satisfied
-    bucket = 1;
-    iron = iron - itemPrereqs['bucket']['iron'];
-    water = water - itemPrereqs['bucket']['water'];
-    
-    addMessage("Crafted Bucket!");
-    $('#bucketInventory').text("Bucket : Crafted");
-    $('#ironInventory').text("Iron : " + iron);
-    $('#waterInventory').text("Water : " + water);
-    
+    createItem('bucket');
     activateButton(itemPrereqs['bucket']['time'], "createBucketProgress", "Create Bucket");
-  }  
+  } 
 }
 
 
@@ -845,18 +843,7 @@ function createBucket(){
 */
 function createIronAx(){
   if(itemPrereqSatisfied('ironAx')){
-
-    //Requirements succeeded
-    ironAx = 1;
-    wood = wood - itemPrereqs['ironAx']['wood'];
-    iron = iron - itemPrereqs['ironAx']['iron'];
-    water = water - itemPrereqs['ironAx']['water'];
-    
-    addMessage("Crafted an Iron Ax!");
-    $('#ironInventory').text("Iron : " + iron);
-    $('#waterInventory').text("Water : " + water);
-    $('#ironAxInventory').text("Iron Ax : Crafted");
-
+    createItem('ironAx');
     activateButton(itemPrereqs['ironAx']['time'], "createIronAxProgress", "Create IronAx");
   }
 }
@@ -867,16 +854,7 @@ function createIronAx(){
 function createRockHammer(){
   if(itemPrereqSatisfied('rockHammer')){
     createItem('rockHammer');
-/*
-    rock = rock - itemPrereqs['rockHammer']['rock'];
-    wood = wood - itemPrereqs['rockHammer']['wood'];
-    rockHammer = 1;
-    activateButton(itemPrereqs['rockHammer']['time'], "createRockHammerProgress", "Create Rock Hammer");
-    $('#rockHammerInventory').text("Rock Hammer : Crafted");
-    $('#rockInventory').text("Rocks : " + rock);
-    $('#woodInventory').text("Wood  : " + wood);
-    addMessage("Crafted Rock Hammer"); 
-  */
+    
     //if we have rocks, and since we just crafted a rock hammer, placeStoneWalkButton becomes visibile
     activateButton(itemPrereqs['rockHammer']['time'], "createRockHammerProgress", "Create Rock Hammer");
     $('#placeStoneWalkButton').show();

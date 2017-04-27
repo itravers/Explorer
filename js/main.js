@@ -770,6 +770,14 @@ function createItem(item){
     bucket = 1;
     $('#bucketInventory').text("Bucket : Crafted");
     addMessage("Crafted Bucket!");
+  }else if(item == 'rockIronShovel'){
+    rockIronShovel = 1;
+    $('#rockIronShovelInventory').text("Rock Iron Shovel : Crafted");
+    addMessage("Crafted Rock Iron Shovel!");
+  }else if(item == 'glassMachine'){
+    glassMachine = 1;
+    $('#glassMachineInventory').text("Glass Machine : Crafted");
+    addMessage("Crafted Glass Machine");
   }
 
 
@@ -782,23 +790,7 @@ function createItem(item){
 function createGlassMachine(){
   if(itemPrereqSatisfied('glassMachine')){
     //requirements satisfied, make a glassMachine
-    glassMachine = 1;
-    wood = wood - itemPrereqs['glassMachine']['wood'];
-    water = water - itemPrereqs['glassMachine']['water'];
-    rock = rock - itemPrereqs['glassMachine']['rock'];
-    glass = glass - itemPrereqs['glassMachine']['glass'];
-    sand = sand - itemPrereqs['glassMachine']['sand'];
-    iron = iron - itemPrereqs['glassMachine']['iron'];
-    //update inventory list
-    addMessage("Crafted a Glass Machine!");
-    $("#glassMachineInventory").text("Glass Machine: Crafted");    
-    $("#woodInventory").text("Wood : " + wood);
-    $("#waterInventory").text("Water : " + water);
-    $("#rockInventory").text("Rock : " + rock);
-    $("#glassInventory").text("Glass : " + glass);
-    $("#sandInventory").text("Sand : " + sand);
-    $("#ironInventory").text("Iron : " + iron);
-
+    createItem('glassMachine');
     activateButton(itemPrereqs['glassMachine']['time'], "createGlassMachineProgress", "Create Glass Machine");
   }
 }
@@ -808,21 +800,7 @@ function createGlassMachine(){
 */
 function createRockIronShovel(){
   if(itemPrereqSatisfied('rockIronShovel')){
-
-    //requirements satisfied, made a rockIronShovel
-    rockIronShovel = 1;
-    iron = iron - itemPrereqs['rockIronShovel']['iron'];
-    rock = rock - itemPrereqs['rockIronShovel']['rock'];
-    wood = wood - itemPrereqs['rockIronShovel']['wood'];
-    glass = glass - itemPrereqs['rockIronShovel']['glass'];
-
-    addMessage("Crafted a Rock Iron Shovel!");
-    $("#rockIronShovelInventory").text("RockIronShovel: Crafted");
-    $("#ironInventory").text("Iron : " + iron);
-    $("#rockInventory").text("Rock : " + rock);
-    $("#woodInventory").text("Wood : " + wood);
-    $("#glassInventory").text("Glass : " + glass);
-  
+    createItem('rockIronShovel');
     activateButton(itemPrereqs['rockIronShovel']['time'], "createRockIronShovelProgress", "Create Rock Iron Shovel");
   }
 }

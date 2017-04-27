@@ -8,6 +8,14 @@ var map;
    so we will go head and display that part of the map*/
 var siteMap;
 
+//variables to help us with printing the map correctly
+var mapHeight;
+var mapWidth; 
+var borderWidth;
+var borderHeight;
+var mapZeroX;
+var mapZeroY;
+
 /* 2d Associative array used to store all the prerequs for each item
    IE: itemPrereqs["rockHammer"]["rock"] = 25;*/
 var itemPrereqs;
@@ -90,6 +98,44 @@ $(function() {
          getItem();
        }
    });
+
+   //listen for canvas clicks
+   $("#mapCanvas").click(function(e){
+     var canvas = this;//document.getElementById("#mapCanvas");
+
+     console.log("x: " + e.offsetX + " y: " + e.offsetY);
+     var x = e.offsetX;
+     var y = e.offsetY;
+     var success = false;
+     //if click up button
+     if(x >= borderWidth && x <= (canvas.width-borderWidth) 
+        && y >= 0 && y <= borderHeight){
+        movePlayer("up");
+        success = true; 
+     }else if(x >= borderWidth && x<=(canvas.width-borderWidth)
+              && y >= borderHeight+mapHeight && y <= canvas.height){
+       movePlayer("down");
+       success = true;
+     }else if(x >= 0 && x <= borderWidth
+           && y >= borderHeight && y <= (canvas.height-borderHeight)){
+       movePlayer("left");
+       success = true;
+     }else if(x >= borderWidth+mapWidth && x <= canvas.width
+           && y >= borderHeight && y <= canvas.height-borderHeight){
+       movePlayer("right");
+       success = true;
+     } 
+
+
+     if(success){
+       printMapButtons("#347C37");
+       setTimeout(function(){
+         printMapButtons("#4CAF50")
+       }, 100);
+     }
+   });  
+
+
 });
 
 /* Reads prereqs for each item from file and loads them into
@@ -279,6 +325,7 @@ function itemPrereqSatisfied(item){
     Prints Initial player health under inventory list
 */
 function initMap(){
+  initMapVariables(); 
   //load map from file, synchronously
   $.ajax({
     url : "maps/map1.txt",
@@ -445,6 +492,8 @@ function getItem(){
 
   }
 
+
+  activateButton(5, "getItemProgress", "Get Item");
   //update Buttons when inventory is adequate to show that button
   updateButtons();
 }
@@ -488,6 +537,7 @@ function updateButtons(){
      && wood > 0 && iron > 0 && water > 0 && sand > 0 && rock > 0 && glassMachine == 0){
     $('#createGlassMachineButton').show();
   }
+
 
   //show createPickAxButton if we have sand, water, wood, rock, glass, iron and no pickAx
   if(sand > 0 && water > 0 && wood > 0 && rock > 0 && glass > 0 && iron > 0 && pickAx == 0 && glassMachine == 1){
@@ -607,7 +657,7 @@ function injurePlayer(){
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
   ctx.fillStyle = 'red';
-  ctx.fillRect(0,0, canvas.width, canvas.height);
+  ctx.fillRect(mapZeroX,mapZeroY, mapHeight, mapWidth);
   setTimeout(function(){
     printMap();
   }, 10);
@@ -626,12 +676,12 @@ function killPlayer(){
 function unPrintPlayer(){
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
-  var height = (canvas.height)/map[0].length;
-  var width = (canvas.width)/map.length;
+  var height = (mapHeight)/map[0].length;
+  var width = (mapWidth)/map.length;
   var color = getColorFromMapPosition(currentPos[1], currentPos[0]);
  
   ctx.fillStyle = color;
-  ctx.fillRect(currentPos[1]*width, currentPos[0]*height, width, height);
+  ctx.fillRect((mapZeroX) + (currentPos[1]*width), (mapZeroY) + (currentPos[0]*height), width, height);
 }
 
 
@@ -639,10 +689,10 @@ function unPrintPlayer(){
 function printPlayer(){
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
-  var height = canvas.height/map[0].length;
-  var width = canvas.width/map.length;
+  var height = mapHeight/map[0].length;
+  var width = mapWidth/map.length;
   ctx.fillStyle = 'red';
-  ctx.fillRect(currentPos[1]*width, currentPos[0]*height, width, height);
+  ctx.fillRect((mapZeroX)+(currentPos[1]*width), (mapZeroY) + (currentPos[0]*height), width, height);
 }
 
 
@@ -675,19 +725,85 @@ function getDistance(x1, y1, x2, y2){
   return returnVal;
 }
 
-/* Prints the map as an HTML5 canvas */
-function printMap(){
+function initMapVariables(){
+  var canvas = document.getElementById('mapCanvas');  
+
+  borderWidth = 30;
+  borderHeight = 30;
+  mapZeroX = borderWidth;
+  mapZeroY = borderHeight;
+  mapWidth = canvas.width-(borderWidth*2);
+  mapHeight = canvas.height-(borderHeight*2);
+}
+
+function printMapButtons(color){
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
-  var height = canvas.height/map[0].length;
-  var width = canvas.width/map.length;
+  ctx.fillStyle = color;
+  
+  //print top button
+  ctx.fillRect(mapZeroX, 0, mapWidth+1, borderHeight);
+  ctx.beginPath();
+  ctx.moveTo(canvas.width/2, borderHeight/5); 
+  ctx.lineTo((canvas.width/2)+10, (borderHeight/5)*4);
+  ctx.lineTo((canvas.width/2)-10, (borderHeight/5)*4);
+  ctx.closePath();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#000000";
+  ctx.stroke();
+
+  //print bottom button
+  ctx.fillRect(mapZeroX, (borderHeight+mapHeight), mapWidth+1, borderHeight);
+  ctx.beginPath();
+  ctx.moveTo(canvas.width/2,(borderHeight+mapHeight)+(borderHeight/5)*4); 
+  ctx.lineTo((canvas.width/2)+10, (borderHeight+mapHeight)+(borderHeight/5));
+  ctx.lineTo((canvas.width/2)-10, (borderHeight+mapHeight)+(borderHeight/5));
+  ctx.closePath();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#000000";
+  ctx.stroke();
+
+  //print left button
+  ctx.fillRect(0, borderHeight, borderWidth, mapHeight);
+  ctx.beginPath();
+  ctx.moveTo(borderWidth/5, canvas.height/2); 
+  ctx.lineTo((borderWidth/5)*4, (canvas.height/2)+10);
+  ctx.lineTo((borderWidth/5)*4, (canvas.height/2)-10);
+  ctx.closePath();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#000000";
+  ctx.stroke();
+  
+  //print left button
+  ctx.fillRect(borderWidth+mapWidth, borderHeight, borderWidth, mapHeight+1);
+  ctx.beginPath();
+  ctx.moveTo((canvas.width)- borderWidth/5, canvas.height/2); 
+  ctx.lineTo((canvas.width)-(borderWidth/5)*4, (canvas.height/2)+10);
+  ctx.lineTo((canvas.width)-(borderWidth/5)*4, (canvas.height/2)-10);
+  ctx.closePath();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#000000";
+  ctx.stroke();
+}
+
+/* Prints the map as an HTML5 canvas */
+function printMap(){
+  printMapButtons("#4CAF50");
+  var canvas = document.getElementById('mapCanvas');
+  var ctx = canvas.getContext('2d');
+
+  //draw outline around entire canvas
+  //ctx.strokeRect(0,0,canvas.width,canvas.height);
+
+  var height = mapHeight/map[0].length;
+  var width = mapWidth/map.length;
   var currentX = currentPos[1];
   var currentY = currentPos[0];
 
   //first we blank the map
   ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
+  ctx.fillRect(mapZeroX, mapZeroY, mapWidth, mapHeight);
+
   //Loop through the map and print a specific color at each coordinate
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
@@ -698,13 +814,12 @@ function printMap(){
          or if player has already seen it before. Mark everything we print as seen. */
       if((getDistance(mapPosX, mapPosY, currentX, currentY) <= siteDistance) || siteMap[j][i] == 1){
         ctx.fillStyle = getColorFromMapPosition(i, j);
-        ctx.fillRect(j*width, i*height, width+1, height+1);
-
+        ctx.fillRect(mapZeroX+(j*width), mapZeroY+(i*height), width+1, height+1);
         //make this location visible in siteMap
         siteMap[j][i] = 1;
       }else{ //Coordinate is too far away from player, and we have not seen it before, print black
         ctx.fillStyle = 'black';
-        ctx.fillRect(j*width, i*height, width+1, height+1);
+        ctx.fillRect(mapZeroX+(j*width), mapZeroY+(i*height), width+1, height+1);
       }
     }
   }

@@ -40,13 +40,13 @@ var fireLighting = false;
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
-var wood = 0;      /* The wood the player has left. */
-var water = 0;     /* The water the player has left. */
-var sand = 0;      /* The sand the player has left. */
-var glass = 0;     /* The glass the player has left. */
-var rock = 0;      /* The rocks the player has left. */
-var ironOre = 0;   /* The ironOre the player has left. */
-var iron = 0;      /* The iron the player has left. */
+var wood = 1000;      /* The wood the player has left. */
+var water = 1000;     /* The water the player has left. */
+var sand = 1000;      /* The sand the player has left. */
+var glass = 1000;     /* The glass the player has left. */
+var rock = 1000;      /* The rocks the player has left. */
+var ironOre = 1000;   /* The ironOre the player has left. */
+var iron = 1000;      /* The iron the player has left. */
 
 /* Keep track of the permanent items the player has in inventory.
    0: Player does not have item
@@ -55,6 +55,7 @@ var rockHammer = 0;
 var ironAx = 0;
 var bucket = 0;
 var rockIronShovel = 0;
+var glassMachine = 0;
 
 /* Keep track of the players skill stats. */
 var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
@@ -137,6 +138,23 @@ function initItemPrereqs(){
 function itemPrereqSatisfied(item){
   var satisfied = true;
   addMessage("<br>"); //print a blank line to group prereq messages together
+
+    
+  //check if satisfies upgradeTelescope
+    if(item == 'upgradeTelescope'){
+      var woodNeeded = (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['wood'];
+      var glassNeeded = (telescopeLevel +1) * itemPrereqs['upgradeTelescope']['glass'];
+      if(glass < glassNeeded){
+      satisfied = false;
+      addMessage("Need " + (glassNeeded-glass) + " more Glass!");
+      }
+      if(wood < woodNeeded){
+      satisfied = false;
+      addMessage("Need " + (woodNeeded-wood) + " more Wood!"); 
+      }
+      return satisfied;//only return for upgradeTelescope
+    }
+
   for(key in itemPrereqs[item]){
     if(key == 'rock'){
       if(rock < itemPrereqs[item][key]){
@@ -221,24 +239,17 @@ function itemPrereqSatisfied(item){
         }
         satisfied = false;
       }
+    }else if(key == 'glassMachine'){
+      if(glassMachine != itemPrereqs[item][key]){
+        if(glassMachine == 0){
+          addMessage("Need Glass Machine!");
+        }else{
+          addMessage("Already have Glass Machine!");
+        }
+      satisfied = false;
+      }
     }
 
-  //check if satisfies upgradeTelescope
-  if(item == 'upgradeTelescope'){
-    var woodNeeded = (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['wood'];
-    var glassNeeded = (telescopeLevel +1) * itemPrereqs['upgradeTelescope']['glass'];
-    if(glass < glassNeeded){
-      satisfied = false;
-      addMessage("Need " + glassNeeded + " more Glass!");
-    }
-    if(wood < woodNeeded){
-      satisfied = false;
-      addMessage("Need " + woodNeeded + " more Wood!"); 
-    }
-  }
-
-//    console.log("key = " + key);
-//    console.log("iremPrereqs["+item+"]["+key+"] = " + itemPrereqs[item][key]);
   }
   return satisfied; 
 }
@@ -441,6 +452,12 @@ function updateButtons(){
   if(iron > 0 && rock > 0 && wood > 0 && glass > 0 && rockIronShovel == 0){
     $('#createRockIronShovelButton').show();
   }
+
+  //Show createGlassMachineButton if we have ironAx, bucket, rockIronShovel, glass, wood, iron, water, sand rock, and no glassMachine
+  if(ironAx == 1 && bucket == 1 && rockIronShovel == 1 && glass > 0 
+     && wood > 0 && iron > 0 && water > 0 && sand > 0 && rock > 0 && glassMachine == 0){
+    $('#createGlassMachineButton').show();
+  }
 }
 
 /* Moves player from current position to new position
@@ -517,6 +534,7 @@ function movePlayer(dir){
     //if the fire is out, take 1 health every time the player moves
     if(fireState == 0){
       injurePlayer();
+      addMessage("<br>");//put a space under message
       addMessage("You're Freezing!");
     }
 
@@ -686,6 +704,33 @@ function placeStoneWalk(){
 }
 
 
+/* called by user pressing createGlassMachineButton
+   Create a glass machine and add it to players inventory
+*/
+function createGlassMachine(){
+  if(itemPrereqSatisfied('glassMachine')){
+    //requirements satisfied, make a glassMachine
+    glassMachine = 1;
+    wood = wood - itemPrereqs['glassMachine']['wood'];
+    water = water - itemPrereqs['glassMachine']['water'];
+    rock = rock - itemPrereqs['glassMachine']['rock'];
+    glass = glass - itemPrereqs['glassMachine']['glass'];
+    sand = sand - itemPrereqs['glassMachine']['sand'];
+    iron = iron - itemPrereqs['glassMachine']['iron'];
+    //update inventory list
+    addMessage("Crafted a Glass Machine!");
+    $("#glassMachineInventory").text("Glass Machine: Crafted");    
+    $("#woodInventory").text("Wood : " + wood);
+    $("#waterInventory").text("Water : " + water);
+    $("#rockInventory").text("Rock : " + rock);
+    $("#glassInventory").text("Glass : " + glass);
+    $("#sandInventory").text("Sand : " + sand);
+    $("#ironInventory").text("Iron : " + iron);
+
+    activateButton(itemPrereqs['glassMachine']['time'], "createGlassMachineProgress", "Create Glass Machine");
+  }
+}
+
 /* Called by user pressing createRockIronShovelButton
    Create a Rock Iron Shovel and add it to players inventory
 */
@@ -808,14 +853,21 @@ function smeltOre(){
 function makeGlass(){
 
   if(itemPrereqSatisfied('glass')){
-    glass++;
-      sand = sand - itemPrereqs['glass']['sand'];
-      fireState = 0;
-      printFireState(fireState);
-      addMessage("Made 1 Glass");
-      $('#glassInventory').text("Glass    : " + glass);
-      $('#sandInventory').text("Sand    : " + sand);
-      activateButton(itemPrereqs['glass']['time'], "makeGlassProgress", "Make Glass");
+    var numMade = 0;
+    if(glassMachine == 1){
+      glass = glass + 5;
+      numMade = 5;
+    }else{
+      glass++;
+      numMade = 1;
+    }
+    sand = sand - itemPrereqs['glass']['sand'];
+    fireState = 0;
+    printFireState(fireState);
+    addMessage("Made " + numMade + " Glass");
+    $('#glassInventory').text("Glass    : " + glass);
+    $('#sandInventory').text("Sand    : " + sand);
+    activateButton(itemPrereqs['glass']['time'], "makeGlassProgress", "Make Glass");
 
   }
   //if we have glass, and we have wood, the upgradeTelescope button should show
@@ -833,6 +885,8 @@ function upgradeTelescope(){
       wood = wood - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['wood'];;
       telescopeLevel++
       siteDistance = (telescopeLevel * 2) + 1;
+      addMessage("<br>");
+      addMessage("Telescope Upgraded");
       $('#telescopeInventory').text("Tele :   " + telescopeLevel);
       $('#glassInventory').text("Glass :   " + glass);
       $('#woodInventory').text("Wood :   " + wood);
@@ -882,6 +936,7 @@ function activateButton(interval, buttonID, text) {
       if(buttonID == 'createIronAxProgress')  $('#createIronAxButton').hide();
       if(buttonID == 'createBucketProgress')  $('#createBucketButton').hide();
       if(buttonID == 'createRockIronShovelProgress')  $('#createRockIronShovelButton').hide();
+      if(buttonID == 'createGlassMachineProgress')  $('#createGlassMachineButton').hide();
       if(buttonID == 'lightFireProgress')fireLighting = false;
     } else {
       width++; 

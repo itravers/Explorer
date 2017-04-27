@@ -1,9 +1,10 @@
 rockHammer       rock:25       wood:25       rockHammer:0                                      time:2
 iron             ironOre:10    water:10      fireState:4                                       time:2
 glass            sand:10       fireState:4                                                     time:2
-lightFire        wood:1                                                                        time:100
+lightFire        wood:1                                                                        time:10
 ironAx           wood:50       iron:10       water:50       rockHammer:1    ironAx:0           time:2
 bucket           iron:10       water:100     bucket:0       rockHammer:1    ironAx:1           time:2
 rockIronShovel   iron:10       rock:50       wood:100       glass:20        rockIronShovel:0   time:2
 stoneWalk        rock:5        rockHammer:1                                                    time:2
 upgradeTelescope wood:10       glass:2                                                         time:2
+glassMachine wood:100 water:500 rock:100 glass:20 sand:200 iron:25 rockIronShovel:1 bucket:1 ironAx:1 glassMachine:0 time:500;

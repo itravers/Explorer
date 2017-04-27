@@ -757,8 +757,14 @@ function createItem(item){
     fireState = 0;
     printFireState(fireState);
     addMessage("Made 1 Iron");
-    $('ironInventory').text("Iron : " + iron);
+    $('#ironInventory').text("Iron : " + iron);
+  }else if(item == 'rockHammer'){
+    rockHammer = 1;
+    $('#rockHammerInventory').text("Rock Hammer : Crafted");
+    addMessage("Crafted Rock Hammer");
   }
+
+
 }
 
 
@@ -860,7 +866,8 @@ function createIronAx(){
 */
 function createRockHammer(){
   if(itemPrereqSatisfied('rockHammer')){
-
+    createItem('rockHammer');
+/*
     rock = rock - itemPrereqs['rockHammer']['rock'];
     wood = wood - itemPrereqs['rockHammer']['wood'];
     rockHammer = 1;
@@ -869,7 +876,9 @@ function createRockHammer(){
     $('#rockInventory').text("Rocks : " + rock);
     $('#woodInventory').text("Wood  : " + wood);
     addMessage("Crafted Rock Hammer"); 
+  */
     //if we have rocks, and since we just crafted a rock hammer, placeStoneWalkButton becomes visibile
+    activateButton(itemPrereqs['rockHammer']['time'], "createRockHammerProgress", "Create Rock Hammer");
     $('#placeStoneWalkButton').show();
   }
 }
@@ -881,7 +890,6 @@ function smeltOre(){
   if(itemPrereqSatisfied('iron')){
     createItem('iron');  
     activateButton(itemPrereqs['iron']['time'], "smeltOreProgress", "Smelt Ore");
-
 
     if(iron > 0 && rockHammer == 1 && wood > 0 && ironAx == 0){
     $('#createIronAxButton').show();

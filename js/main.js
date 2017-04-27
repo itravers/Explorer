@@ -57,6 +57,7 @@ var bucket = 0;
 var rockIronShovel = 0;
 var glassMachine = 0;
 var pickAx = 0;
+var smeltingMachine = 0;
 
 /* Keep track of the players skill stats. */
 var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
@@ -255,6 +256,15 @@ function itemPrereqSatisfied(item){
           addMessage("Need Pick Ax!");
         }else{
           addMessage("Already Have Pick Ax");
+        }
+        satisfied = false;
+      }
+    }else if(key == 'smeltingMachine'){
+      if(smeltingMachine != itemPrereqs[item][key]){
+        if(smeltingMachine == 0){
+          addMessage("Need Smelting Machine!");
+        }else{
+          addMessage("Already Have Smelting Machine");
         }
         satisfied = false;
       }
@@ -482,6 +492,11 @@ function updateButtons(){
   //show createPickAxButton if we have sand, water, wood, rock, glass, iron and no pickAx
   if(sand > 0 && water > 0 && wood > 0 && rock > 0 && glass > 0 && iron > 0 && pickAx == 0 && glassMachine == 1){
     $('#createPickAxButton').show();
+  }
+  
+  //show createSmeltingMachineButton if we have sand, water, wood, rock, glass, iron and no smeltingMachine
+  if(sand > 0 && water > 0 && wood > 0 && rock > 0 && glass > 0 && iron > 0 && smeltingMachine == 0){
+    $('#createSmeltingMachineButton').show();
   }
 }
 
@@ -778,10 +793,15 @@ function createItem(item){
     addMessage("Made " + numMade + " Glass!");
     $('#glassInventory').text('Glass : ' + glass);
   }else if(item == 'iron'){
-    iron++;
+    if(smeltingMachine == 1){//smelting machine makes more iron
+      iron = iron + 10;
+      addMessage("Smelted 10 Iron");
+    }else{
+      iron++;
+      addMessage("Smelted 1 Iron");
+    }
     fireState = 0;
     printFireState(fireState);
-    addMessage("Made 1 Iron");
     $('#ironInventory').text("Iron : " + iron);
   }else if(item == 'rockHammer'){
     rockHammer = 1;
@@ -807,8 +827,24 @@ function createItem(item){
     pickAx = 1;
     $('#pickAxInventory').text('Pick Ax : Crafted');
     addMessage("Crafted Pick Ax");
+  }else if(item == 'smeltingMachine'){
+    smeltingMachine = 1;
+    $('#smeltingMachineInventory').text('Smelting Machine : Crafted');
+    addMessage("Crafted Smelting Machine");
   }
 }
+
+
+/* Called by user pressing createSmeltingMachineButton
+   Create a Smelting Machine and add it to inventory
+*/
+function createSmeltingMachine(){
+  if(itemPrereqSatisfied('smeltingMachine')){
+    createItem('smeltingMachine');
+    activateButton(itemPrereqs['smeltingMachine']['time'], "createSmeltingMachineProgress", "Create Smelting Machine");
+  }
+}
+
 
 /* Called by user pressing createPickAxButton
    Create a pick ax and add it to inventory
@@ -975,6 +1011,7 @@ function activateButton(interval, buttonID, text) {
       if(buttonID == 'createRockIronShovelProgress')  $('#createRockIronShovelButton').hide();
       if(buttonID == 'createGlassMachineProgress')  $('#createGlassMachineButton').hide();
       if(buttonID == 'createPickAxProgress')  $('#createPickAxButton').hide();
+      if(buttonID == 'createSmeltingMachineProgress')  $('#createSmeltingMachineButton').hide();
       if(buttonID == 'lightFireProgress')fireLighting = false;
     } else {
       width++; 

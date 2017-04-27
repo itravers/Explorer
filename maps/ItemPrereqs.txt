@@ -9,3 +9,4 @@ stoneWalk        rock:5        rockHammer:1                                     
 upgradeTelescope wood:10       glass:2                                                         time:2
 glassMachine wood:100 water:500 rock:100 glass:20 sand:200 iron:25 rockIronShovel:1 bucket:1 ironAx:1 glassMachine:0 time:50
 pickAx wood:500 water:1000 rock:200 glass:100 sand:500 iron:30 glassMachine:1 pickAx:0 time:20
+smeltingMachine wood:1000 water:1500 rock:500 glass:100 sand:1000 iron:50 smeltingMachine:0 time:50

@@ -56,6 +56,7 @@ var ironAx = 0;
 var bucket = 0;
 var rockIronShovel = 0;
 var glassMachine = 0;
+var pickAx = 0;
 
 /* Keep track of the players skill stats. */
 var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
@@ -246,7 +247,16 @@ function itemPrereqSatisfied(item){
         }else{
           addMessage("Already have Glass Machine!");
         }
-      satisfied = false;
+        satisfied = false;
+      }
+    }else if(key == 'pickAx'){
+      if(pickAx != itemPrereqs[item][key]){
+        if(pickAx == 0){
+          addMessage("Need Pick Ax!");
+        }else{
+          addMessage("Already Have Pick Ax");
+        }
+        satisfied = false;
       }
     }
 
@@ -384,9 +394,14 @@ function getItem(){
 
   }else if(map[x][y] == 'R'){ //There is rock at the players current location
     map[x][y] = "0"; //Replace rock with nothing.
-
-    rock++;
-    addMessage("Got 1 Rock");
+ 
+    if(pickAx == 1){
+      rock = rock + 10;;
+      addMessage("Got 10 Rock");
+    }else{
+      rock = rock + 1;
+      addMessage("Got 1 Rock");
+    }
 
     $("#rockInventory").text("Rock    : " + rock); //Update rock in inventory list
     printMap(); //Reprint the Map
@@ -396,8 +411,13 @@ function getItem(){
     if(rockHammer == 1){ //must have rock hammer to get Iron Ore
       map[x][y] = "0"; //Replace Iron Ore with nothing
 
-      ironOre++;
-      addMessage("Got 1 Iron Ore");
+      if(pickAx == 1){//pickAx gets 10 iron ore at once
+        ironOre = ironOre + 10;
+        addMessage("Got 10 Iron Ore");
+      }else{
+        ironOre++;
+        addMessage("Got 1 Iron Ore");
+      }
 
       $('#ironOreInventory').text("Iron Ore : " + ironOre); //Update Iron Ore in inventory list
       printMap(); //Reprint the Map
@@ -457,6 +477,11 @@ function updateButtons(){
   if(ironAx == 1 && bucket == 1 && rockIronShovel == 1 && glass > 0 
      && wood > 0 && iron > 0 && water > 0 && sand > 0 && rock > 0 && glassMachine == 0){
     $('#createGlassMachineButton').show();
+  }
+
+  //show createPickAxButton if we have sand, water, wood, rock, glass, iron and no pickAx
+  if(sand > 0 && water > 0 && wood > 0 && rock > 0 && glass > 0 && iron > 0 && pickAx == 0 && glassMachine == 1){
+    $('#createPickAxButton').show();
   }
 }
 
@@ -778,9 +803,21 @@ function createItem(item){
     glassMachine = 1;
     $('#glassMachineInventory').text("Glass Machine : Crafted");
     addMessage("Crafted Glass Machine");
+  }else if(item == 'pickAx'){
+    pickAx = 1;
+    $('#pickAxInventory').text('Pick Ax : Crafted');
+    addMessage("Crafted Pick Ax");
   }
+}
 
-
+/* Called by user pressing createPickAxButton
+   Create a pick ax and add it to inventory
+*/
+function createPickAx(){
+  if(itemPrereqSatisfied('pickAx')){
+    createItem('pickAx');
+    activateButton(itemPrereqs['pickAx']['time'], "createPickAxProgress", "Create Pick Ax");
+  }
 }
 
 
@@ -937,6 +974,7 @@ function activateButton(interval, buttonID, text) {
       if(buttonID == 'createBucketProgress')  $('#createBucketButton').hide();
       if(buttonID == 'createRockIronShovelProgress')  $('#createRockIronShovelButton').hide();
       if(buttonID == 'createGlassMachineProgress')  $('#createGlassMachineButton').hide();
+      if(buttonID == 'createPickAxProgress')  $('#createPickAxButton').hide();
       if(buttonID == 'lightFireProgress')fireLighting = false;
     } else {
       width++; 

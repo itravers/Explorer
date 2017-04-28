@@ -498,6 +498,28 @@ function getItem(){
   updateButtons();
 }
 
+/* Updates the inventory displays */
+function updateInventory(){
+  $("#healthInventory").text("Health : " + health);
+  $("#telescopeInventory").text("Tele Lvl : " + telescopeLevel);
+  
+  if(rockHammer == 1)  $("#rockHammerInventory").text("Rock Hammer : Crafted");
+  if(ironAx == 1) $("#ironAxInventory").text("Iron Ax : Crafted");
+  if(bucket == 1) $("#bucketInventory").text("Bucket : Crafted");
+  if(rockIronShovel == 1) $("#rockIronShovelInventory").text("RI Shovel : Crafted");
+  if(glassMachine == 1) $("#glassMachineInventory").text("Glass Machine : Crafted");
+  if(pickAx == 1) $("#pickAxInventory").text("Pick Ax : Crafted");
+  if(smeltingMachine == 1) $("#smeltingMachineInventory").text("Smelting M. : Crafted");
+  if(wood > 0) $("#woodInventory").text("Wood : " + wood);
+  if(water > 0) $("#waterInventory").text("Water : " + water);
+  if(sand > 0) $("#sandInventory").text("Sand : " + sand);
+  if(glass > 0) $("#glassInventory").text("Glass : " + glass);
+  if(rock > 0) $("#rockInventory").text("Rock : " + rock);
+  if(ironOre > 0) $("#ironOreInventory").text("Iron Ore : " + ironOre);
+  if(iron > 0) $("#ironInventory").text("Iron : " + iron);
+
+
+}
 
 /* Updates visibility of button if there is adequate 
    inventory levels to show those buttons. */
@@ -547,6 +569,11 @@ function updateButtons(){
   //show createSmeltingMachineButton if we have sand, water, wood, rock, glass, iron and no smeltingMachine
   if(sand > 0 && water > 0 && wood > 0 && rock > 0 && glass > 0 && iron > 0 && smeltingMachine == 0){
     $('#createSmeltingMachineButton').show();
+  }
+  
+  //if we have glass, and we have wood, the upgradeTelescope button should show
+  if(glass > 0 && wood > 0){
+    $('#upgradeTelescopeButton').show();
   }
 }
 
@@ -1052,14 +1079,8 @@ function smeltOre(){
 */
 function makeGlass(){
   if(itemPrereqSatisfied('glass')){
-    createItem('glass');
     fireState = 0; 
     activateButton(itemPrereqs['glass']['time'], "makeGlassProgress", "Make Glass");
-  }
-
-  //if we have glass, and we have wood, the upgradeTelescope button should show
-  if(glass > 0 && wood > 0){
-    $('#upgradeTelescopeButton').show();
   }
 }
 
@@ -1090,16 +1111,6 @@ function lightFire(){
   if(itemPrereqSatisfied('lightFire')){
     if(fireLighting == false){//we don't want to light fire while it's already lighting 
       activateButton(itemPrereqs['lightFire']['time'], "lightFireProgress", "Stoke Fire");
-      if(fireState == 0)addMessage("Fire Started");//only say fire started when fire is started
-      wood = wood - itemPrereqs['lightFire']['wood'];
-      $("#woodInventory").text("Wood   : " + wood);
-      if(fireState < 4){
-        fireState++;
-        movesSinceLastFireStateChange = 0;
-        printFireState(fireState);
-      }else{
-        addMessage("You're wasting wood!");
-      }
     }
   }
 }
@@ -1128,9 +1139,35 @@ function activateButton(interval, buttonID, text) {
       if(buttonID == 'createPickAxProgress')  $('#createPickAxButton').hide();
       if(buttonID == 'createSmeltingMachineProgress')  $('#createSmeltingMachineButton').hide();
       if(buttonID == 'lightFireProgress')fireLighting = false;
+     
+      finishButton(buttonID);
     } else {
       width++; 
       elem.style.width = width + '%'; 
     }
   }
+}
+
+/* Called when a button is done being activated
+   This is where we should call createItem */
+function finishButton(buttonID){
+  if(buttonID == 'makeGlassProgress') createItem('glass');
+
+  if(buttonID == 'lightFireProgress'){
+    if(fireState == 0) addMessage("Fire Started"); //only say "Fire Started" when fire is started
+    wood = wood - itemPrereqs['lightFire']['wood'];
+ 
+    if(fireState < 4){
+      fireState++;
+      movesSinceLastFireStateChange = 0;
+      printFireState(fireState);
+    }else{
+      addMessage("You're Wasting Wood!");
+    }
+  }
+
+  
+
+  updateInventory();
+  updateButtons();
 }

@@ -45,6 +45,7 @@ var movesSinceLastFireStateChange = 0;
    so we can't press the Stroke Fire button repeatedly at once
 */
 var fireLighting = false;
+var upgradingTelescope = false;  
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
@@ -1089,17 +1090,10 @@ function makeGlass(){
 */
 function upgradeTelescope(){
   if(itemPrereqSatisfied('upgradeTelescope')){
-      //do this all manually instead of using createItem()
-      glass = glass - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['glass'];
-      wood = wood - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['wood'];;
-      telescopeLevel++
-      siteDistance = (telescopeLevel * 2) + 1;
-      addMessage("<br>");
-      addMessage("Telescope Upgraded");
-      $('#telescopeInventory').text("Tele :   " + telescopeLevel);
-      $('#glassInventory').text("Glass :   " + glass);
-      $('#woodInventory').text("Wood :   " + wood);
+    if(upgradingTelescope == false){
+      upgradingTelescope = true;  
       activateButton(itemPrereqs['upgradeTelescope']['time'], "upgradeTelescopeProgress", "Upgrade Telescope");
+    }
       printMap(); 
   }
 }
@@ -1110,6 +1104,7 @@ function upgradeTelescope(){
 function lightFire(){
   if(itemPrereqSatisfied('lightFire')){
     if(fireLighting == false){//we don't want to light fire while it's already lighting 
+      fireLighting = true;
       activateButton(itemPrereqs['lightFire']['time'], "lightFireProgress", "Stoke Fire");
     }
   }
@@ -1124,7 +1119,6 @@ function activateButton(interval, buttonID, text) {
   elem.innerHTML = "";//get rid of text while going
   elem.style.width = width;
   updateButtons(); //Update all the buttons based on inventory levels
-  if(buttonID == 'lightFireProgress')fireLighting = true;
   function frame() {
     if (width >= 100) {
       clearInterval(id);
@@ -1138,7 +1132,6 @@ function activateButton(interval, buttonID, text) {
       if(buttonID == 'createGlassMachineProgress')  $('#createGlassMachineButton').hide();
       if(buttonID == 'createPickAxProgress')  $('#createPickAxButton').hide();
       if(buttonID == 'createSmeltingMachineProgress')  $('#createSmeltingMachineButton').hide();
-      if(buttonID == 'lightFireProgress')fireLighting = false;
      
       finishButton(buttonID);
     } else {
@@ -1164,10 +1157,21 @@ function finishButton(buttonID){
     }else{
       addMessage("You're Wasting Wood!");
     }
+    fireLighting = false;
   }
 
-  
+  if(buttonID == "upgradeTelescopeProgress"){
+    glass = glass - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['glass'];
+    wood = wood - (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['wood'];
+    telescopeLevel++;
+    siteDistance = (telescopeLevel * 2) + 1;
+    addMessage("<br>");
+    addMessage("Telescope Upgraded");
+    upgradingTelescope = false;  
+  } 
+ 
 
   updateInventory();
   updateButtons();
+  printMap();
 }

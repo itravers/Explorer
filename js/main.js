@@ -46,6 +46,8 @@ var movesSinceLastFireStateChange = 0;
 */
 var fireLighting = false;
 var upgradingTelescope = false;  
+var smeltingOre = false;
+
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
@@ -576,6 +578,15 @@ function updateButtons(){
   if(glass > 0 && wood > 0){
     $('#upgradeTelescopeButton').show();
   }
+    
+  if(iron > 0 && rockHammer == 1 && wood > 0 && ironAx == 0){
+    $('#createIronAxButton').show();
+  }
+    
+  //show createBucketButton if we have iron, a rockHammer, an ironAx, and water
+  if(iron > 0 && rockHammer == 1 && ironAx == 1 && water > 0 && bucket == 0){
+    $('#createBucketButton').show();
+  }
 }
 
 /* Moves player from current position to new position
@@ -1060,18 +1071,9 @@ function createRockHammer(){
 */
 function smeltOre(){
   if(itemPrereqSatisfied('iron')){
-    createItem('iron');  
-    activateButton(itemPrereqs['iron']['time'], "smeltOreProgress", "Smelt Ore");
-
-    if(iron > 0 && rockHammer == 1 && wood > 0 && ironAx == 0){
-    $('#createIronAxButton').show();
+    if(smeltingOre == false){ 
+      activateButton(itemPrereqs['iron']['time'], "smeltOreProgress", "Smelt Ore"); 
     }
-    
-    //show createBucketButton if we have iron, a rockHammer, an ironAx, and water
-    if(iron > 0 && rockHammer == 1 && ironAx == 1 && water > 0 && bucket == 0){
-    $('#createBucketButton').show();
-    }
-  
   }
 }
 
@@ -1170,6 +1172,10 @@ function finishButton(buttonID){
     upgradingTelescope = false;  
   } 
  
+  if(buttonID == "smeltOreProgress"){
+    createItem('iron'); 
+    smeltingOre = false;
+  }
 
   updateInventory();
   updateButtons();

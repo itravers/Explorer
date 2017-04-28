@@ -47,7 +47,7 @@ var movesSinceLastFireStateChange = 0;
 var fireLighting = false;
 var upgradingTelescope = false;  
 var smeltingOre = false;
-
+var creatingRockHammer = false;
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
@@ -1058,11 +1058,10 @@ function createIronAx(){
 */
 function createRockHammer(){
   if(itemPrereqSatisfied('rockHammer')){
-    createItem('rockHammer');
-    
-    //if we have rocks, and since we just crafted a rock hammer, placeStoneWalkButton becomes visibile
-    activateButton(itemPrereqs['rockHammer']['time'], "createRockHammerProgress", "Create Rock Hammer");
-    $('#placeStoneWalkButton').show();
+    if(creatingRockHammer == false){
+      creatingRockHammer = true;
+      activateButton(itemPrereqs['rockHammer']['time'], "createRockHammerProgress", "Create Rock Hammer");
+    }
   }
 }
 
@@ -1175,6 +1174,11 @@ function finishButton(buttonID){
   if(buttonID == "smeltOreProgress"){
     createItem('iron'); 
     smeltingOre = false;
+  }
+
+  if(buttonID == "createRockHammerProgress"){ 
+    createItem('rockHammer');
+    creatingRockHammer = false;  
   }
 
   updateInventory();

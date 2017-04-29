@@ -48,6 +48,7 @@ var fireLighting = false;
 var upgradingTelescope = false;  
 var smeltingOre = false;
 var creatingRockHammer = false;
+var makingGlass = false;
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
@@ -1080,7 +1081,8 @@ function smeltOre(){
 /* Called when the user clicks Make Glass button
 */
 function makeGlass(){
-  if(itemPrereqSatisfied('glass')){
+  if(itemPrereqSatisfied('glass') && makingGlass == false){
+    makingGlass = true;
     fireState = 0; 
     activateButton(itemPrereqs['glass']['time'], "makeGlassProgress", "Make Glass");
   }
@@ -1145,7 +1147,10 @@ function activateButton(interval, buttonID, text) {
 /* Called when a button is done being activated
    This is where we should call createItem */
 function finishButton(buttonID){
-  if(buttonID == 'makeGlassProgress') createItem('glass');
+  if(buttonID == 'makeGlassProgress'){
+     createItem('glass');
+     makingGlass = false;
+  }
 
   if(buttonID == 'lightFireProgress'){
     if(fireState == 0) addMessage("Fire Started"); //only say "Fire Started" when fire is started

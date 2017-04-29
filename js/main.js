@@ -54,6 +54,7 @@ var creatingBucket = false;
 var creatingRockIronShovel = false;
 var creatingGlassMachine = false;
 var creatingPickAx = false;
+var creatingSmeltingMachine = false;
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
@@ -586,6 +587,8 @@ function updateButtons(){
   //show createSmeltingMachineButton if we have sand, water, wood, rock, glass, iron and no smeltingMachine
   if(sand > 0 && water > 0 && wood > 0 && rock > 0 && glass > 0 && iron > 0 && smeltingMachine == 0){
     $('#createSmeltingMachineButton').show();
+  }else{
+    $('#createSmeltingMachineButton').hide();
   }
   
   //if we have glass, and we have wood, the upgradeTelescope button should show
@@ -1011,8 +1014,8 @@ function createItem(item){
    Create a Smelting Machine and add it to inventory
 */
 function createSmeltingMachine(){
-  if(itemPrereqSatisfied('smeltingMachine')){
-    createItem('smeltingMachine');
+  if(itemPrereqSatisfied('smeltingMachine') && creatingSmeltingMachine == false){
+    creatingSmeltingMachine = true;
     activateButton(itemPrereqs['smeltingMachine']['time'], "createSmeltingMachineProgress", "Create Smelting Machine");
   }
 }
@@ -1143,10 +1146,6 @@ function activateButton(interval, buttonID, text) {
     if (width >= 100) {
       clearInterval(id);
       elem.innerHTML = text;//bring back text once done
-
-      //Hide certain buttons after they are done being activated
-      if(buttonID == 'createSmeltingMachineProgress')  $('#createSmeltingMachineButton').hide();
-     
       finishButton(buttonID);
     } else {
       width++; 
@@ -1222,6 +1221,10 @@ function finishButton(buttonID){
     creatingPickAx = false;
   }
 
+  if(buttonID == 'createSmeltingMachineProgress'){
+    createItem('smeltingMachine');
+    creatingSmeltingMachine = false;
+  }
 
   updateInventory();
   updateButtons();

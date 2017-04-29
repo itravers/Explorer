@@ -541,6 +541,8 @@ function updateButtons(){
   //if we have rocks and wood and no rockhammer show the createRockHammerButton
   if(rock > 0 && wood > 0 && rockHammer != 1){
     $('#createRockHammerButton').show();
+  }else{ 
+    $('#createRockHammerButton').hide();
   }
 
   //show that rock hammer has been crafted in inventory if rockHammer = 1
@@ -1128,7 +1130,6 @@ function activateButton(interval, buttonID, text) {
       elem.innerHTML = text;//bring back text once done
 
       //Hide certain buttons after they are done being activated
-      if(buttonID == 'createRockHammerProgress')  $('#createRockHammerButton').hide();
       if(buttonID == 'createIronAxProgress')  $('#createIronAxButton').hide();
       if(buttonID == 'createBucketProgress')  $('#createBucketButton').hide();
       if(buttonID == 'createRockIronShovelProgress')  $('#createRockIronShovelButton').hide();

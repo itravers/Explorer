@@ -20,6 +20,7 @@ var mapZeroY;
    IE: itemPrereqs["rockHammer"]["rock"] = 25;*/
 var itemPrereqs;
 
+
 /* State Variables - Keeps track of stuff in the game. */
 
 /* Keep Track of the players current position.*/
@@ -41,8 +42,9 @@ var fireState = 0;
    player moves around. */
 var movesSinceLastFireStateChange = 0;
 
-/* Keeps track if the fire is currently being stroked,
-   so we can't press the Stroke Fire button repeatedly at once
+/* Keep track if an action is currently activated
+   this is used to make sure the action doesn't activate more
+   than once at a time.
 */
 var fireLighting = false;
 var upgradingTelescope = false;  
@@ -92,7 +94,7 @@ $(document).ready(function(){
 });
 
 
-/* Listen for key presses*/
+/* Listen for key presses and clicks on the map canvas*/
 $(function() {
    $(window).keypress(function(e) {
        var key = e.which;
@@ -136,7 +138,6 @@ $(function() {
        success = true;
      } 
 
-
      if(success){
        printMapButtons("#347C37");
        setTimeout(function(){
@@ -144,8 +145,6 @@ $(function() {
        }, 100);
      }
    });  
-
-
 });
 
 /* Reads prereqs for each item from file and loads them into
@@ -196,8 +195,7 @@ function initItemPrereqs(){
 function itemPrereqSatisfied(item){
   var satisfied = true;
   addMessage("<br>"); //print a blank line to group prereq messages together
-
-    
+ 
   //check if satisfies upgradeTelescope
     if(item == 'upgradeTelescope'){
       var woodNeeded = (telescopeLevel + 1) * itemPrereqs['upgradeTelescope']['wood'];
@@ -325,7 +323,6 @@ function itemPrereqSatisfied(item){
         satisfied = false;
       }
     }
-
   }
   return satisfied; 
 }
@@ -502,8 +499,7 @@ function getItem(){
 
   }
 
-
-  activateButton(5, "getItemProgress", "Get Item");
+  activateButton(1, "getItemProgress", "Get Item");
   //update Buttons when inventory is adequate to show that button
   updateButtons();
 }
@@ -527,9 +523,8 @@ function updateInventory(){
   if(rock > 0) $("#rockInventory").text("Rock : " + rock);
   if(ironOre > 0) $("#ironOreInventory").text("Iron Ore : " + ironOre);
   if(iron > 0) $("#ironInventory").text("Iron : " + iron);
-
-
 }
+
 
 /* Updates visibility of button if there is adequate 
    inventory levels to show those buttons. */
@@ -576,7 +571,6 @@ function updateButtons(){
     $('#createGlassMachineButton').hide();
   }
 
-
   //show createPickAxButton if we have sand, water, wood, rock, glass, iron and no pickAx
   if(sand > 0 && water > 0 && wood > 0 && rock > 0 && glass > 0 && iron > 0 && pickAx == 0 && glassMachine == 1){
     $('#createPickAxButton').show();
@@ -609,6 +603,7 @@ function updateButtons(){
     $('#createBucketButton').hide();
   }
 }
+
 
 /* Moves player from current position to new position
    based on dir (string).
@@ -723,12 +718,14 @@ function injurePlayer(){
   }, 10);
 }
 
+
 /** Kill the player, and reset the game. */
 function killPlayer(){
   addMessage("You Died!!!");
   alert("You Died, Death is Permenant!");
   location.reload();
 }
+
 
 /* Remove the players piece from the map.
    Finds what should be printed on the map
@@ -785,9 +782,11 @@ function getDistance(x1, y1, x2, y2){
   return returnVal;
 }
 
+/*Initialized the variables that seperate the canvas from the
+  map that is printed on the canvas. Gives border room for the
+  directional buttons. */
 function initMapVariables(){
   var canvas = document.getElementById('mapCanvas');  
-
   borderWidth = 30;
   borderHeight = 30;
   mapZeroX = borderWidth;
@@ -796,6 +795,7 @@ function initMapVariables(){
   mapHeight = canvas.height-(borderHeight*2);
 }
 
+/* Prints the directional buttons on the canvas with the given color*/
 function printMapButtons(color){
   var canvas = document.getElementById('mapCanvas');
   var ctx = canvas.getContext('2d');
@@ -886,6 +886,7 @@ function printMap(){
   printPlayer(); //Draw player piece after rest of map has been drawn
 }
 
+
 /* Add a message to the top of players message list
    If list is too long, remove oldest message from list. */
 function addMessage(msg){
@@ -917,6 +918,7 @@ function placeStoneWalk(){
     }
   }
 }
+
 
 /* Creates an item cooresponding to the given name
    updates inventories, and updates player messages.
@@ -1042,6 +1044,7 @@ function createGlassMachine(){
   }
 }
 
+
 /* Called by user pressing createRockIronShovelButton
    Create a Rock Iron Shovel and add it to players inventory
 */
@@ -1051,6 +1054,7 @@ function createRockIronShovel(){
     activateButton(itemPrereqs['rockIronShovel']['time'], "createRockIronShovelProgress", "Create Rock Iron Shovel");
   }
 }
+
 
 /*
    Called by user pressing Create Bucket button
@@ -1133,6 +1137,7 @@ function lightFire(){
   }
 }
 
+
 /* Makes the buttons countdown timer work.
    Certain buttons disappear after they are done activating */
 function activateButton(interval, buttonID, text) {
@@ -1153,6 +1158,7 @@ function activateButton(interval, buttonID, text) {
     }
   }
 }
+
 
 /* Called when a button is done being activated
    This is where we should call createItem */

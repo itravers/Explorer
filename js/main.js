@@ -1054,7 +1054,7 @@ function createBucket(){
 */
 function createIronAx(){
   if(itemPrereqSatisfied('ironAx') && creatingIronAx == false){
-    createIronAx = true;
+    creatingIronAx = true;
     activateButton(itemPrereqs['ironAx']['time'], "createIronAxProgress", "Create IronAx");
   }
 }
@@ -1076,7 +1076,8 @@ function createRockHammer(){
 */
 function smeltOre(){
   if(itemPrereqSatisfied('iron')){
-    if(smeltingOre == false){ 
+    if(smeltingOre == false){
+      smeltingOre = true; 
       activateButton(itemPrereqs['iron']['time'], "smeltOreProgress", "Smelt Ore"); 
     }
   }

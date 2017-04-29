@@ -51,6 +51,7 @@ var creatingRockHammer = false;
 var makingGlass = false;
 var creatingIronAx = false;
 var creatingBucket = false;
+var creatingRockIronShovel = false;
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
@@ -560,6 +561,8 @@ function updateButtons(){
   //Show createRockIronShovelButton if we have iron, rocks, wood, glass, and no rockIronShovel yet
   if(iron > 0 && rock > 0 && wood > 0 && glass > 0 && rockIronShovel == 0){
     $('#createRockIronShovelButton').show();
+  }else{
+    $('#createRockIronShovelButton').hide();
   }
 
   //Show createGlassMachineButton if we have ironAx, bucket, rockIronShovel, glass, wood, iron, water, sand rock, and no glassMachine
@@ -1035,8 +1038,8 @@ function createGlassMachine(){
    Create a Rock Iron Shovel and add it to players inventory
 */
 function createRockIronShovel(){
-  if(itemPrereqSatisfied('rockIronShovel')){
-    createItem('rockIronShovel');
+  if(itemPrereqSatisfied('rockIronShovel') && creatingRockIronShovel == false){
+    creatingRockIronShovel = true;
     activateButton(itemPrereqs['rockIronShovel']['time'], "createRockIronShovelProgress", "Create Rock Iron Shovel");
   }
 }
@@ -1137,7 +1140,6 @@ function activateButton(interval, buttonID, text) {
       elem.innerHTML = text;//bring back text once done
 
       //Hide certain buttons after they are done being activated
-      if(buttonID == 'createRockIronShovelProgress')  $('#createRockIronShovelButton').hide();
       if(buttonID == 'createGlassMachineProgress')  $('#createGlassMachineButton').hide();
       if(buttonID == 'createPickAxProgress')  $('#createPickAxButton').hide();
       if(buttonID == 'createSmeltingMachineProgress')  $('#createSmeltingMachineButton').hide();
@@ -1200,6 +1202,11 @@ function finishButton(buttonID){
   if(buttonID == "createBucketProgress"){
     createItem('bucket');
     creatingBucket = true;
+  }
+
+  if(buttonID == "createRockIronShovelProgress"){
+    createItem('rockIronShovel');
+    creatingRockIronShovel = false;
   }
 
   updateInventory();

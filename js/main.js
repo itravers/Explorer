@@ -49,6 +49,7 @@ var upgradingTelescope = false;
 var smeltingOre = false;
 var creatingRockHammer = false;
 var makingGlass = false;
+var creatingIronAx = false;
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
@@ -584,6 +585,8 @@ function updateButtons(){
     
   if(iron > 0 && rockHammer == 1 && wood > 0 && ironAx == 0){
     $('#createIronAxButton').show();
+  }else{
+    $('#createIronAxButton').hide();
   }
     
   //show createBucketButton if we have iron, a rockHammer, an ironAx, and water
@@ -1050,8 +1053,8 @@ function createBucket(){
 /* Creates an Iron Ax and adds it to players inventory
 */
 function createIronAx(){
-  if(itemPrereqSatisfied('ironAx')){
-    createItem('ironAx');
+  if(itemPrereqSatisfied('ironAx') && creatingIronAx == false){
+    createIronAx = true;
     activateButton(itemPrereqs['ironAx']['time'], "createIronAxProgress", "Create IronAx");
   }
 }
@@ -1130,7 +1133,6 @@ function activateButton(interval, buttonID, text) {
       elem.innerHTML = text;//bring back text once done
 
       //Hide certain buttons after they are done being activated
-      if(buttonID == 'createIronAxProgress')  $('#createIronAxButton').hide();
       if(buttonID == 'createBucketProgress')  $('#createBucketButton').hide();
       if(buttonID == 'createRockIronShovelProgress')  $('#createRockIronShovelButton').hide();
       if(buttonID == 'createGlassMachineProgress')  $('#createGlassMachineButton').hide();
@@ -1185,6 +1187,11 @@ function finishButton(buttonID){
   if(buttonID == "createRockHammerProgress"){ 
     createItem('rockHammer');
     creatingRockHammer = false;  
+  }
+
+  if(buttonID == "createIronAxProgress"){
+    createItem('ironAx');
+    creatingIronAx = false;
   }
 
   updateInventory();

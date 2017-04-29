@@ -52,16 +52,18 @@ var makingGlass = false;
 var creatingIronAx = false;
 var creatingBucket = false;
 var creatingRockIronShovel = false;
+var creatingGlassMachine = false;
+var creatingPickAx = false;
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
-var wood = 1000;      /* The wood the player has left. */
-var water = 1000;     /* The water the player has left. */
-var sand = 1000;      /* The sand the player has left. */
-var glass = 1000;     /* The glass the player has left. */
-var rock = 1000;      /* The rocks the player has left. */
-var ironOre = 1000;   /* The ironOre the player has left. */
-var iron = 1000;      /* The iron the player has left. */
+var wood = 10000;      /* The wood the player has left. */
+var water = 10000;     /* The water the player has left. */
+var sand = 10000;      /* The sand the player has left. */
+var glass = 10000;     /* The glass the player has left. */
+var rock = 10000;      /* The rocks the player has left. */
+var ironOre = 10000;   /* The ironOre the player has left. */
+var iron = 10000;      /* The iron the player has left. */
 
 /* Keep track of the permanent items the player has in inventory.
    0: Player does not have item
@@ -569,12 +571,16 @@ function updateButtons(){
   if(ironAx == 1 && bucket == 1 && rockIronShovel == 1 && glass > 0 
      && wood > 0 && iron > 0 && water > 0 && sand > 0 && rock > 0 && glassMachine == 0){
     $('#createGlassMachineButton').show();
+  }else{ 
+    $('#createGlassMachineButton').hide();
   }
 
 
   //show createPickAxButton if we have sand, water, wood, rock, glass, iron and no pickAx
   if(sand > 0 && water > 0 && wood > 0 && rock > 0 && glass > 0 && iron > 0 && pickAx == 0 && glassMachine == 1){
     $('#createPickAxButton').show();
+  }else{
+    $('#createPickAxButton').hide();
   }
   
   //show createSmeltingMachineButton if we have sand, water, wood, rock, glass, iron and no smeltingMachine
@@ -1016,8 +1022,8 @@ function createSmeltingMachine(){
    Create a pick ax and add it to inventory
 */
 function createPickAx(){
-  if(itemPrereqSatisfied('pickAx')){
-    createItem('pickAx');
+  if(itemPrereqSatisfied('pickAx') && creatingPickAx == false){
+    creatingPickAx = true;
     activateButton(itemPrereqs['pickAx']['time'], "createPickAxProgress", "Create Pick Ax");
   }
 }
@@ -1027,9 +1033,8 @@ function createPickAx(){
    Create a glass machine and add it to players inventory
 */
 function createGlassMachine(){
-  if(itemPrereqSatisfied('glassMachine')){
-    //requirements satisfied, make a glassMachine
-    createItem('glassMachine');
+  if(itemPrereqSatisfied('glassMachine') && creatingGlassMachine == false){
+    creatingGlassMachine = true;
     activateButton(itemPrereqs['glassMachine']['time'], "createGlassMachineProgress", "Create Glass Machine");
   }
 }
@@ -1140,8 +1145,6 @@ function activateButton(interval, buttonID, text) {
       elem.innerHTML = text;//bring back text once done
 
       //Hide certain buttons after they are done being activated
-      if(buttonID == 'createGlassMachineProgress')  $('#createGlassMachineButton').hide();
-      if(buttonID == 'createPickAxProgress')  $('#createPickAxButton').hide();
       if(buttonID == 'createSmeltingMachineProgress')  $('#createSmeltingMachineButton').hide();
      
       finishButton(buttonID);
@@ -1208,6 +1211,17 @@ function finishButton(buttonID){
     createItem('rockIronShovel');
     creatingRockIronShovel = false;
   }
+
+  if(buttonID == "createGlassMachineProgress"){
+    createItem('glassMachine');
+    creatingGlassMachine = false;
+  }
+
+  if(buttonID == 'createPickAxProgress'){
+    createItem('pickAx');
+    creatingPickAx = false;
+  }
+
 
   updateInventory();
   updateButtons();

@@ -78,9 +78,10 @@ var rockIronShovel = 0;
 var glassMachine = 0;
 var pickAx = 0;
 var smeltingMachine = 0;
+var levelKey = false;
 
 /* Keep track of the players skill stats. */
-var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
+var telescopeLevel = 80;                       /* The Level the player has gotten there telescoping to.*/
 var siteDistance = (telescopeLevel*2)+1;      /* The distance away from player they are able to see. */
 
 
@@ -494,6 +495,8 @@ function getItem(){
   }else if(map[x][y] == 's'){ //There is a Stone Walkway at players current location
     addMessage("Can't get Walkway!");
 
+  }else if(map[x][y] == 'D'){
+    addMessage("Can't get Door!")
   }else if(map[x][y] == "0"){ //There is nothing at the players current location
     addMessage("No Item to get");
 
@@ -610,7 +613,9 @@ function updateButtons(){
    If player tries to move off of map, we don't let him. */
 function movePlayer(dir){
   unPrintPlayer(); //Remove Player's Piece from map
-
+  var previousPos = new Array();
+  previousPos.push(currentPos[0]);
+  previousPos.push(currentPos[1]);
   var success = false; //Used to judge the success of our move
 
   if(dir == "up"){ //Player tries to move up
@@ -650,8 +655,9 @@ function movePlayer(dir){
     }
   }
   
-  printMap(); //Reprint the Map after player moved
 
+  printMap(); //Reprint the Map after player moved
+  
   /* Player succedded in moving.
      We check if player is moving onto a Stone Walk Way,
      If they ARE NOT: We remove 1 water, and add 1 to movesSinceLastFireStateChange 
@@ -663,16 +669,25 @@ function movePlayer(dir){
     //if we are moving onto a stoneWalkWay 's' we won't decrease water or increase movesSinceLastFireStateChange
     var x = currentPos[0];
     var y = currentPos[1];
-    if(map[x][y] != 's'){  
-      //increase movesSinceLastFireStateChange
+    if(map[x][y] != 's'){ //moving onto a stone walk 
       movesSinceLastFireStateChange++;
-      //check water, if exists remove 1
       if(water > 0){
         water--;
         $('#waterInventory').text("Water    : " + water);
       }else{//there is no water left, remove 1 health from player 
         injurePlayer();
         addMessage("You are thirsty.");
+      }
+    }
+
+    if(map[x][y] == 'D'){
+      if(levelKey == false){
+        addMessage("Can't use door, no KEY!")
+        currentPos[0] = previousPos[0];
+        currentPos[1] = previousPos[1];
+        printMap();
+      }else{
+        addMessage("You've Reached a Door!");
       }
     }
 
@@ -770,6 +785,8 @@ function getColorFromMapPosition(x, y){
     return '#565656';
   }else if(map[x][y] == 'I'){//ironOre
     return '#c6c131';
+  }else if(map[x][y] == 'D'){//door
+    return '#ff69b4';//pink
   }
 }
 

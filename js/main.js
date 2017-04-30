@@ -66,7 +66,7 @@ var creatingSmeltingMachine = false;
 
 /*Keep track of player and enemy damage stats, and enemyHealth */
 var playerDamage = 10;
-var enemyDamage = 1;
+var enemyDamage = 5;
 var enemyHealth = 100;
 
 /* Keep track of the players inventory. */
@@ -721,7 +721,7 @@ function movePlayer(dir){
         water--;
         $('#waterInventory').text("Water    : " + water);
       }else{//there is no water left, remove 1 health from player 
-        injurePlayer();
+        injurePlayer(1);
         addMessage("You are thirsty.");
       }
     }
@@ -739,9 +739,14 @@ function movePlayer(dir){
       }
     }
 
+    if(map[x][y] == 'E'){
+      addMessage("You Encountered An Enemy, Prepare to FIGHT!");
+      battleEnemy();
+    }
+
     //if the fire is out, take 1 health every time the player moves
     if(fireState == 0){
-      injurePlayer();
+      injurePlayer(1);
       addMessage("<br>");//put a space under message
       addMessage("You're Freezing!");
     }
@@ -763,12 +768,27 @@ function movePlayer(dir){
   }
 }
 
+function battleEnemy(){
+  addMessage("You are in a battle!");
+
+  var timer = setInterval(function(){ //the enemy will attack every 3 seconds
+    injurePlayer(enemyDamage); 
+    addMessage("Enemy Hits You For " + enemyDamage + " Damage!");
+    
+
+    if(enemyHealth <= 0){
+      addMessage("Enemy Has Been Defeated!");
+      clearInterval(timer);
+    }
+  }, 3000);
+}
+
 
 /* Removes 1 health from player
    Flashes red on the screen to let
    player know they are being injured */
-function injurePlayer(){
-  health--
+function injurePlayer(amt){
+  health = health - amt;
   $('#healthInventory').text("Health    : " + health);
 
   //flash red on map
@@ -779,6 +799,8 @@ function injurePlayer(){
   setTimeout(function(){
     printMap();
   }, 10);
+
+  if(health <= 0) killPlayer();
 }
 
 

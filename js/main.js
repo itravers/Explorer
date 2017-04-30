@@ -8,6 +8,11 @@ var map;
    so we will go head and display that part of the map*/
 var siteMap;
 
+/* A String that stores the name of the file of our
+   current map. This will be used by the incrementMap function
+   to change the name of the map, so a new map can be loaded. */
+var currentMap;
+
 //variables to help us with printing the map correctly
 var mapHeight;
 var mapWidth; 
@@ -90,7 +95,8 @@ var siteDistance = (telescopeLevel*2)+1;      /* The distance away from player t
    2. Print that map
 */
 $(document).ready(function(){
-  initMap("map1.txt");
+  currentMap = "map1.txt"
+  initMap(currentMap);
   printMap();
 });
 
@@ -328,6 +334,16 @@ function itemPrereqSatisfied(item){
   return satisfied; 
 }
 
+/* Increments the name of the map */
+function incrementMap(){
+  var splitMap = currentMap.split("."); //splits map name at the dot
+  var mapName = splitMap[0]; //get the part before the dot
+  mapName = mapName.substring(3);//strip the "map" off, we should now have a num
+  mapName = parseInt(mapName);
+  mapName++;
+  currentMap = "map"+mapName+".txt";
+}
+
 /* Loads the map from file
     Initializes the siteMap to all 0's
     Prints Initial player health under inventory list
@@ -352,8 +368,14 @@ function initMap(mapFile){
         }
       }
     },
-    error : function(){ 
-      console.log("Could not load Map.");
+    error : function(e){ 
+      console.log("Could not load Map. " +e);
+      if(e.status == 404){
+        //map file not found, this means we have reached the end of the maps
+        //in this case we'll start over with map1.txt
+        currentMap = "map1.txt";
+        initMap(currentMap);
+      }
     }
   });
 
@@ -688,7 +710,8 @@ function movePlayer(dir){
         printMap();
       }else{
         addMessage("You've Reached a Door!");
-        initMap("map2.txt");
+        incrementMap();
+        initMap(currentMap);
       }
     }
 

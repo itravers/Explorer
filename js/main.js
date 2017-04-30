@@ -78,7 +78,7 @@ var rockIronShovel = 0;
 var glassMachine = 0;
 var pickAx = 0;
 var smeltingMachine = 0;
-var levelKey = false;
+var levelKey = true;
 
 /* Keep track of the players skill stats. */
 var telescopeLevel = 80;                       /* The Level the player has gotten there telescoping to.*/
@@ -90,7 +90,7 @@ var siteDistance = (telescopeLevel*2)+1;      /* The distance away from player t
    2. Print that map
 */
 $(document).ready(function(){
-  initMap();
+  initMap("map1.txt");
   printMap();
 });
 
@@ -332,11 +332,11 @@ function itemPrereqSatisfied(item){
     Initializes the siteMap to all 0's
     Prints Initial player health under inventory list
 */
-function initMap(){
+function initMap(mapFile){
   initMapVariables(); 
   //load map from file, synchronously
   $.ajax({
-    url : "maps/map1.txt",
+    url : "maps/"+mapFile,
     type : "get",
     async: false,
     success : function(data){
@@ -688,6 +688,7 @@ function movePlayer(dir){
         printMap();
       }else{
         addMessage("You've Reached a Door!");
+        initMap("map2.txt");
       }
     }
 

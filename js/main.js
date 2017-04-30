@@ -349,6 +349,8 @@ function incrementMap(){
     Prints Initial player health under inventory list
 */
 function initMap(mapFile){
+  currentPos[0] = 0;
+  currentPos[1] = 0;
   initMapVariables(); 
   //load map from file, synchronously
   $.ajax({
@@ -787,7 +789,7 @@ function printPlayer(){
   var ctx = canvas.getContext('2d');
   var height = mapHeight/map[0].length;
   var width = mapWidth/map.length;
-  ctx.fillStyle = 'red';
+  ctx.fillStyle = '#00FF00';
   ctx.fillRect((mapZeroX)+(currentPos[1]*width), (mapZeroY) + (currentPos[0]*height), width, height);
 }
 

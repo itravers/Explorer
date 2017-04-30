@@ -65,9 +65,12 @@ var creatingPickAx = false;
 var creatingSmeltingMachine = false;
 
 /*Keep track of player and enemy damage stats, and enemyHealth */
-var playerDamage = 10;
-var enemyDamage = 5;
+var playerDamage = 30;
+var enemyDamage = 15;
 var enemyHealth = 100;
+var battleTimer; //used by setInterval in battles
+var inBattle = false;
+var fightingEnemy = false; //used to keep player from clicking Fight Enemy multiple times
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
@@ -89,7 +92,7 @@ var rockIronShovel = 0;
 var glassMachine = 0;
 var pickAx = 0;
 var smeltingMachine = 0;
-var levelKey = true;
+var levelKey = false;
 
 /* Keep track of the players skill stats. */
 var telescopeLevel = 80;                       /* The Level the player has gotten there telescoping to.*/
@@ -166,12 +169,28 @@ function initEnemy(){
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
       if(map[i][j] == 'E'){
+        enemyHealth = 100;
         enemyPos[0] = i;
         enemyPos[1] = j; 
       }
     }
   }
   addMessage("Enemy @ " + enemyPos[1] + ":" + enemyPos[0]);
+}
+
+/* removes enemy from the current map*/
+function removeEnemy(){
+  
+  for(var i = 0; i < map.length; i++){
+    for(var j = 0; j < map[i].length; j++){
+      if(map[i][j] == 'E'){
+        map[i][j] = '0';
+        enemyPos[0] = null;
+        enemyPos[1] = null; 
+      }
+    }
+  }
+  printMap();
 }
 
 /* Reads prereqs for each item from file and loads them into
@@ -736,6 +755,7 @@ function movePlayer(dir){
         addMessage("You've Reached a Door!");
         incrementMap();
         initMap(currentMap);
+        printMap();
       }
     }
 
@@ -768,19 +788,49 @@ function movePlayer(dir){
   }
 }
 
+function stopBattle(){
+  inBattle = false;
+  $("#fightButton").hide();
+  clearInterval(battleTimer);
+}
+
 function battleEnemy(){
+  inBattle = true;
+  $("#fightButton").show();
   addMessage("You are in a battle!");
 
-  var timer = setInterval(function(){ //the enemy will attack every 3 seconds
+  battleTimer = setInterval(function(){ //the enemy will attack every 3 seconds
     injurePlayer(enemyDamage); 
     addMessage("Enemy Hits You For " + enemyDamage + " Damage!");
-    
-
-    if(enemyHealth <= 0){
-      addMessage("Enemy Has Been Defeated!");
-      clearInterval(timer);
-    }
   }, 3000);
+}
+
+/* Called when player hits the fight button 
+   activates the button*/
+function fight(){
+  if(fightingEnemy == false){
+    fightingEnemy = true;
+    activateButton(40, "fightProgress", "Fight Enemy");
+  }
+}
+
+
+/* Called when the Fight Enemy button is done activating */
+function fightEnemy(){
+  addMessage("Damaged Enemy for " + playerDamage + " Damage!");
+  enemyHealth = enemyHealth - playerDamage;
+  if(enemyHealth > 0){
+    addMessage("Enemy Has " + enemyHealth + " Left!");
+  }else{
+    addMessage("You Defeated the Enemy! He has dropped a KEY");
+    levelKey = true;
+    $("#keyInventory").text("Key : Aquired");
+    stopBattle();
+    enemyHealth == 100;//reset enemy health for next enemy battle
+    removeEnemy();
+    
+  }  
+  
 }
 
 
@@ -798,7 +848,7 @@ function injurePlayer(amt){
   ctx.fillRect(mapZeroX,mapZeroY, mapHeight, mapWidth);
   setTimeout(function(){
     printMap();
-  }, 10);
+  }, 50);
 
   if(health <= 0) killPlayer();
 }
@@ -806,7 +856,12 @@ function injurePlayer(amt){
 
 /** Kill the player, and reset the game. */
 function killPlayer(){
-  addMessage("You Died!!!");
+  if(inBattle){
+    stopBattle();
+    addMessage("You Died In Battle!");
+  }else{
+    addMessage("You Died!!!");
+  }
   alert("You Died, Death is Permenant!");
   location.reload();
 }
@@ -1319,6 +1374,11 @@ function finishButton(buttonID){
   if(buttonID == 'createSmeltingMachineProgress'){
     createItem('smeltingMachine');
     creatingSmeltingMachine = false;
+  }
+  
+  if(buttonID == 'fightProgress'){
+    fightEnemy();
+    fightingEnemy = false;
   }
 
   updateInventory();

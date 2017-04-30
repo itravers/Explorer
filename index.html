@@ -13,8 +13,13 @@
     </div>
     <div class="buttons">
       <div class="buttonContainer">   
+       
+         <div class="progressButton" id="fightButton" onclick="fight()">
+          <div class="progress" id="fightProgress">Fight Enemy</div>
+        </div>
+       
         <div class="progressButton" id="lightFireButton" onclick="lightFire()">
-          <div class="progress" id="lightFireProgress">StokeFire</div>
+          <div class="progress" id="lightFireProgress">Stoke Fire</div>
         </div>
 
         <div class="progressButton" id="getItemButton" onclick="getItem()">
@@ -74,6 +79,7 @@
       <ul id="inventoryList" class="gameList">
         <li id="healthInventory"></li>
         <li id="damageInventory"></li>
+        <li id="keyInventory"></li>
         <li id="telescopeInventory"></li>
         <li id="rockHammerInventory"></li>
         <li id="ironAxInventory"></li>

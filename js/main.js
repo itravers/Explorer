@@ -30,6 +30,7 @@ var itemPrereqs;
 
 /* Keep Track of the players current position.*/
 var currentPos = [0, 0];
+var enemyPos = [0,0];//this will be updated by initEnemy
 
 /* Keeps track of the fires current state:
    0: The Fire is Out
@@ -62,6 +63,11 @@ var creatingRockIronShovel = false;
 var creatingGlassMachine = false;
 var creatingPickAx = false;
 var creatingSmeltingMachine = false;
+
+/*Keep track of player and enemy damage stats, and enemyHealth */
+var playerDamage = 10;
+var enemyDamage = 1;
+var enemyHealth = 100;
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
@@ -153,6 +159,20 @@ $(function() {
      }
    });  
 });
+
+/* Initializes the enemy position and state */
+function initEnemy(){
+  //loop through map and find enemy position
+  for(var i = 0; i < map.length; i++){
+    for(var j = 0; j < map[i].length; j++){
+      if(map[i][j] == 'E'){
+        enemyPos[0] = i;
+        enemyPos[1] = j; 
+      }
+    }
+  }
+  addMessage("Enemy @ " + enemyPos[1] + ":" + enemyPos[0]);
+}
 
 /* Reads prereqs for each item from file and loads them into
    itemPrereqs, a 2d associative array
@@ -382,7 +402,7 @@ function initMap(mapFile){
   });
 
   //print initial inventory
-  $('#healthInventory').text("Health  : " + health);
+  updateInventory();
 
   //init siteMap to be the size of map, with every value set to 0 (not visible)
   siteMap = new Array();
@@ -396,7 +416,8 @@ function initMap(mapFile){
   }
   printFireState(fireState); //Print the state of the fire to the player messages.
 
-  initItemPrereqs();
+  initItemPrereqs(); 
+  initEnemy();
 }
 
 
@@ -534,6 +555,7 @@ function getItem(){
 /* Updates the inventory displays */
 function updateInventory(){
   $("#healthInventory").text("Health : " + health);
+  $("#damageInventory").text("Damage : " + playerDamage);
   $("#telescopeInventory").text("Tele Lvl : " + telescopeLevel);
   
   if(rockHammer == 1)  $("#rockHammerInventory").text("Rock Hammer : Crafted");
@@ -813,6 +835,8 @@ function getColorFromMapPosition(x, y){
     return '#c6c131';
   }else if(map[x][y] == 'D'){//door
     return '#ff69b4';//pink
+  }else if(map[x][y] == 'E'){//Enemy at this location
+    return 'RED';
   }
 }
 

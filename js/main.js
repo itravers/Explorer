@@ -67,13 +67,14 @@ var creatingSmeltingMachine = false;
 /*Keep track of player and enemy damage stats, and enemyHealth */
 var playerDamage = 30;
 var enemyDamage = 15;
-var enemyHealth = 100;
+var enemyHealth = 10;
+var enemyAlive = true;
 var battleTimer; //used by setInterval in battles
 var inBattle = false;
 var fightingEnemy = false; //used to keep player from clicking Fight Enemy multiple times
 
 /* Keep track of the players inventory. */
-var health = 100;  /* The amount of heath the player has left. */
+var health = 1000;  /* The amount of heath the player has left. */
 var wood = 10000;      /* The wood the player has left. */
 var water = 10000;     /* The water the player has left. */
 var sand = 10000;      /* The sand the player has left. */
@@ -169,9 +170,10 @@ function initEnemy(){
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
       if(map[i][j] == 'E'){
-        enemyHealth = 100;
+        enemyHealth = 10;
         enemyPos[0] = i;
         enemyPos[1] = j; 
+        enemyAlive = true;
         map[i][j] = '0';//remove enemy from map, we'll reference with enemyPos from now on
       }
     }
@@ -189,6 +191,7 @@ function removeEnemy(){
       }
     }
   }
+  enemyAlive = false;
   enemyPos[0] = null;
   enemyPos[1] = null; 
   printMap();
@@ -391,6 +394,7 @@ function incrementMap(){
 function initMap(mapFile){
   currentPos[0] = 0;
   currentPos[1] = 0;
+  levelKey = false; //we don't have the key for this map yet
   initMapVariables(); 
   //load map from file, synchronously
   $.ajax({
@@ -592,6 +596,12 @@ function updateInventory(){
   if(rock > 0) $("#rockInventory").text("Rock : " + rock);
   if(ironOre > 0) $("#ironOreInventory").text("Iron Ore : " + ironOre);
   if(iron > 0) $("#ironInventory").text("Iron : " + iron);
+
+  if(levelKey){
+    $("#keyInventory").text("Key : Aquired");
+  }else{
+    $("#keyInventory").text("");
+  }
 }
 
 
@@ -844,6 +854,7 @@ function fightEnemy(){
    This will cause the enemy to creep closer to the player
 */
 function moveEnemy(){
+  if(!enemyAlive) return;
   //subtract player location from enemy location
   var xVec = currentPos[1] - enemyPos[1];
   var yVec = currentPos[0] - enemyPos[0];

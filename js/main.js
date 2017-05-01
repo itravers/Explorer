@@ -839,6 +839,10 @@ function fightEnemy(){
   }  
 }
 
+/* Moves the enemy towards the player 1/4 of the time
+   The rest of the time the enemy moves in a random direction
+   This will cause the enemy to creep closer to the player
+*/
 function moveEnemy(){
   //subtract player location from enemy location
   var xVec = currentPos[1] - enemyPos[1];

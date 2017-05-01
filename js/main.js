@@ -849,9 +849,7 @@ function moveEnemy(){
   if(random <= 25){
     enemyPos[0] = enemyPos[0] + Math.floor((Math.random() * 3) - 1);
     enemyPos[1] = enemyPos[1] + Math.floor((Math.random() * 3) - 1);
-    addMessage("enemyRandom");
   }else{
-    addMessage("enemyAdvances"); 
 
     if(xVec > 0){
       enemyPos[1]++;

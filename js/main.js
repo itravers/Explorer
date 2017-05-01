@@ -30,7 +30,7 @@ var itemPrereqs;
 
 /* Keep Track of the players current position.*/
 var currentPos = [0, 0];
-var enemyPos = [0,0];//this will be updated by initEnemy
+var enemyPos = [null,null];//this will be updated by initEnemy
 
 /* Keeps track of the fires current state:
    0: The Fire is Out
@@ -38,7 +38,7 @@ var enemyPos = [0,0];//this will be updated by initEnemy
    2: The fire is burning
    3: The fire is roasting
    4: The fire is fully stoked */
-var fireState = 0;
+var fireState = 4;
 
 /* Keeps track of the amount of moves the player has made
    since the last time the fire's state has changed
@@ -172,6 +172,7 @@ function initEnemy(){
         enemyHealth = 100;
         enemyPos[0] = i;
         enemyPos[1] = j; 
+        map[i][j] = '0';//remove enemy from map, we'll reference with enemyPos from now on
       }
     }
   }
@@ -185,11 +186,11 @@ function removeEnemy(){
     for(var j = 0; j < map[i].length; j++){
       if(map[i][j] == 'E'){
         map[i][j] = '0';
-        enemyPos[0] = null;
-        enemyPos[1] = null; 
       }
     }
   }
+  enemyPos[0] = null;
+  enemyPos[1] = null; 
   printMap();
 }
 
@@ -718,9 +719,11 @@ function movePlayer(dir){
       currentPos[0]++; //Player moves down successfully.
       success = true;
     }
+
   }
   
 
+  moveEnemy();//allow the enemy to move
   printMap(); //Reprint the Map after player moved
   
   /* Player succedded in moving.
@@ -759,9 +762,12 @@ function movePlayer(dir){
       }
     }
 
-    if(map[x][y] == 'E'){
+    //check if we are at same location as enemy, if so, prepare to battle
+    if(currentPos[0] == enemyPos[0] && currentPos[1] == enemyPos[1]){
       addMessage("You Encountered An Enemy, Prepare to FIGHT!");
       battleEnemy();
+    }else{
+      stopBattle();
     }
 
     //if the fire is out, take 1 health every time the player moves
@@ -795,14 +801,16 @@ function stopBattle(){
 }
 
 function battleEnemy(){
-  inBattle = true;
-  $("#fightButton").show();
-  addMessage("You are in a battle!");
-
-  battleTimer = setInterval(function(){ //the enemy will attack every 3 seconds
-    injurePlayer(enemyDamage); 
-    addMessage("Enemy Hits You For " + enemyDamage + " Damage!");
-  }, 3000);
+  if(inBattle == false){//don't battle enemy more than once at a time
+    inBattle = true;
+    $("#fightButton").show();
+    addMessage("You are in a battle!");
+  
+    battleTimer = setInterval(function(){ //the enemy will attack every 3 seconds
+      injurePlayer(enemyDamage); 
+      addMessage("Enemy Hits You For " + enemyDamage + " Damage!");
+    }, 3000);
+  }
 }
 
 /* Called when player hits the fight button 
@@ -826,11 +834,38 @@ function fightEnemy(){
     levelKey = true;
     $("#keyInventory").text("Key : Aquired");
     stopBattle();
-    enemyHealth == 100;//reset enemy health for next enemy battle
-    removeEnemy();
-    
+    //enemyHealth == 100;//reset enemy health for next enemy battle
+    removeEnemy(); 
   }  
-  
+}
+
+function moveEnemy(){
+  //subtract player location from enemy location
+  var xVec = currentPos[1] - enemyPos[1];
+  var yVec = currentPos[0] - enemyPos[0];
+
+  //3/4 time, make the enemy move in a random direction
+  var random = Math.floor((Math.random() * 100) - 50);
+  if(random <= 25){
+    enemyPos[0] = enemyPos[0] + Math.floor((Math.random() * 3) - 1);
+    enemyPos[1] = enemyPos[1] + Math.floor((Math.random() * 3) - 1);
+    addMessage("enemyRandom");
+  }else{
+    addMessage("enemyAdvances"); 
+
+    if(xVec > 0){
+      enemyPos[1]++;
+    }else if(xVec < 0){
+      enemyPos[1]--;
+    }
+
+    if(yVec > 0){
+      enemyPos[0]++;
+    }else if(yVec < 0){
+      enemyPos[0]--;
+    }
+  }  
+
 }
 
 
@@ -896,6 +931,11 @@ function printPlayer(){
 /* Returns a specific HEX COLOR based on what is
    located at a certain position on the map. */
 function getColorFromMapPosition(x, y){
+  //first check if enemy is at location
+  if(enemyPos[0] != null){
+    if(enemyPos[0] == x && enemyPos[1] == y) return "RED";
+  }
+
   if(map[x][y] == '0'){
     return 'white';
   }else if(map[x][y] == 'W'){//wood
@@ -912,9 +952,8 @@ function getColorFromMapPosition(x, y){
     return '#c6c131';
   }else if(map[x][y] == 'D'){//door
     return '#ff69b4';//pink
-  }else if(map[x][y] == 'E'){//Enemy at this location
-    return 'RED';
   }
+
 }
 
 

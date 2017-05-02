@@ -1014,8 +1014,15 @@ function printPlayer(){
    located at a certain position on the map. */
 function getColorFromMapPosition(x, y){
   //first check if enemy is at location
-  if(enemyPos[0] != null){
+  /*if(enemyPos[0] != null){
     if(enemyPos[0] == x && enemyPos[1] == y) return "RED";
+  }*/
+
+  //first check if there is an enemy at location
+  for(var i = 0; i < enemies.length; i++){
+    var xPos = enemies[i]["xPos"];
+    var yPos = enemies[i]["yPos"];
+    if( xPos == x && yPos == y) return "RED";
   }
 
   if(map[x][y] == '0'){

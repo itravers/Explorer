@@ -228,6 +228,9 @@ function loadEnemies(){
         for(var j = 0; j < line.length; j++){
           var stat = line[j].split(":"); //each stats name:value is split with a :
           enemies[i][stat[0]] = stat[1]; //assign each stat a value
+
+          //make sure numbers don't get recorded as strings
+          if(j != 0) enemies[i][stat[0]] = parseInt(stat[1]);
         }
  
       }
@@ -802,7 +805,7 @@ function movePlayer(dir){
   }
   
 
-  moveEnemy();//allow the enemy to move
+  moveEnemies();//allow the enemy to move
   printMap(); //Reprint the Map after player moved
   
   /* Player succedded in moving.
@@ -842,11 +845,22 @@ function movePlayer(dir){
     }
 
     //check if we are at same location as enemy, if so, prepare to battle
-    if(currentPos[0] == enemyPos[0] && currentPos[1] == enemyPos[1]){
+    /*if(currentPos[0] == enemyPos[0] && currentPos[1] == enemyPos[1]){
       addMessage("You Encountered An Enemy, Prepare to FIGHT!");
       battleEnemy();
     }else{
       stopBattle();
+    }*/
+
+    //check if we are at the same location as an enemy, if so, battle enemy
+    for(var i = 0; i < enemies.length; i++){
+      var xPos = enemies[i]["xPos"];
+      var yPos = enemies[i]["yPos"];
+      if(x == xPos && y == yPos){
+        battleEnemy(enemies[i]);
+      }else{
+        stopBattle();
+      }
     }
 
     //if the fire is out, take 1 health every time the player moves
@@ -922,32 +936,41 @@ function fightEnemy(){
    The rest of the time the enemy moves in a random direction
    This will cause the enemy to creep closer to the player
 */
-function moveEnemy(){
-  if(!enemyAlive) return;
+function moveEnemy(enemy){
+  if(enemy["alive"] == 0) return;
   //subtract player location from enemy location
-  var xVec = currentPos[1] - enemyPos[1];
-  var yVec = currentPos[0] - enemyPos[0];
+  var xVec = currentPos[1] - enemy["xPos"];
+  var yVec = currentPos[0] - enemy["yPos"];
 
+  addMessage("1 x : " + enemy["xPos"] + "   y : " + enemy["yPos"]);
   //3/4 time, make the enemy move in a random direction
   var random = Math.floor((Math.random() * 100) - 50);
   if(random <= 25){
-    enemyPos[0] = enemyPos[0] + Math.floor((Math.random() * 3) - 1);
-    enemyPos[1] = enemyPos[1] + Math.floor((Math.random() * 3) - 1);
+    enemy["yPos"] = enemy["yPos"] + Math.floor((Math.random() * 3) - 1);
+    enemy["xPos"] = enemy["xPos"] + Math.floor((Math.random() * 3) - 1);
   }else{
 
     if(xVec > 0){
-      enemyPos[1]++;
+      enemy["xPos"]++;
     }else if(xVec < 0){
-      enemyPos[1]--;
+      enemy["xPos"]--;
     }
 
     if(yVec > 0){
-      enemyPos[0]++;
+      enemy["yPos"]++;
     }else if(yVec < 0){
-      enemyPos[0]--;
+      enemy["yPos"]--;
     }
   }  
+  addMessage("2 x : " + enemy["xPos"] + "   y : " + enemy["yPos"]);
+}
 
+/* Loop through all enemies and decide which direction 
+   they should move. */
+function moveEnemies(){
+  for(var i = 0; i < enemies.length; i++){
+    moveEnemy(enemies[i]);
+  }
 }
 
 

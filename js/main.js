@@ -867,6 +867,7 @@ function movePlayer(dir){
       var yPos = enemies[i]["yPos"];
       if(x == xPos && y == yPos){
         battleEnemy(enemies[i]);
+        break; //we found a battle, so lets break and not accidently stop the battle
       }else{
         stopBattle();
       }
@@ -929,10 +930,10 @@ function fight(){
 
 /* Called when the Fight Enemy button is done activating */
 function fightEnemy(){
-  addMessage("Hit a "+currentEnemy['name'] +" for " + playerDamage + " Damage!");
+  addMessage("You Hit a "+currentEnemy['name'] +" for " + playerDamage + " Damage!");
   currentEnemy['health'] = currentEnemy['health'] - playerDamage;
   if(currentEnemy['health'] > 0){
-    addMessage("A "+currentEnemy['name']+" Has " + currentEnemy['health'] + " Left!");
+    addMessage("A "+currentEnemy['name']+" Has " + currentEnemy['health'] + " Health Left!");
   }else{
     if(currentEnemy['key'] == 1){
       addMessage("You Defeated the " +currentEnemy['name']+"! He has dropped a KEY");

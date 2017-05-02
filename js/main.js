@@ -168,7 +168,7 @@ $(function() {
 });
 
 /* Initializes the enemy position and state */
-function initEnemy(){
+function initEnemy(){/*
   //loop through map and find enemy position
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
@@ -182,6 +182,71 @@ function initEnemy(){
     }
   }
   addMessage("Enemy @ " + enemyPos[1] + ":" + enemyPos[0]);
+  */
+
+  //read enemies from enemy file
+  loadEnemies();
+
+  console.log("enemies: " + enemies);
+}
+
+/* Load the enemies from the enemy file into the enemies variable */
+function loadEnemies(){
+  //first we parse currentMap to see what enemy file we should load
+  var mapNum = getMapNum(currentMap);
+  var fileName = "enemy" + mapNum + ".txt";
+ 
+  //synchonously read from enemy file, and load into enemies array
+  $.ajax({
+    url  : "maps/"+fileName,
+    type : "get",
+    async: false,
+    success : function(data){
+      enemies = new Array(); //enemies is going to be an array so we can access in loop
+      var dataLine = '';
+      var dataAllLines = new Array();
+
+      //break the data into individual lines
+      for(var i = 0; i < data.length; i++){
+        if(data[i] == '\n'){
+          dataAllLines.push(dataLine);
+          dataLine = "";
+        }else{
+          dataLine += data[i];
+        }
+      }
+
+      /*each enemy is in a different spot of dataAllLines
+        go through each item in array and form a new enemy in enemies */
+      for(var i = 0; i < dataAllLines.length; i++){
+        var lineString = dataAllLines[i];
+        lineString = lineString.replace(/\s+/g, " ").trim();//remove extra whitespace
+        var line = lineString.split(" "); //split up each attribute of the enemy
+
+        var enemy = {}; //each enemy is going to be an object, so we can reference stats by name
+        enemies.push(enemy); //add the empty enemy to the enemies list
+        for(var j = 0; j < line.length; j++){
+          var stat = line[j].split(":"); //each stats name:value is split with a :
+          enemies[i][stat[0]] = stat[1]; //assign each stat a value
+        }
+ 
+      }
+    },
+    error : function(e){
+      console.log("Could not read from maps/"+fileName);
+    } 
+  });
+
+}
+
+/* Returns the number of the map by parsing the name of
+   a given map. */
+function getMapNum(mapName){
+  var splitMap = mapName.split(".");//split the map name based on "."
+  mapName = splitMap[0]; //use the first part of the filename
+  mapName = mapName.substring(3); //strip the "map" part of the name off, we now have a num
+  mapName = parseInt(mapName);
+  return mapName;
 }
 
 /* removes enemy from the current map*/
@@ -382,12 +447,13 @@ function itemPrereqSatisfied(item){
 
 /* Increments the name of the map */
 function incrementMap(){
-  var splitMap = currentMap.split("."); //splits map name at the dot
+/*  var splitMap = currentMap.split("."); //splits map name at the dot
   var mapName = splitMap[0]; //get the part before the dot
   mapName = mapName.substring(3);//strip the "map" off, we should now have a num
-  mapName = parseInt(mapName);
-  mapName++;
-  currentMap = "map"+mapName+".txt";
+  mapName = parseInt(mapName);*/
+  var mapNum = getMapNum(currentMap);
+  mapNum++;
+  currentMap = "map"+mapNum+".txt";
 }
 
 /* Loads the map from file

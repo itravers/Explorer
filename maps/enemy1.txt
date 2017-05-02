@@ -1,0 +1,2 @@
+turtle xPos:20 yPos:20 damage:2 health:20 key:1
+CutePuppy xPos:20 yPos:20 damage:1 health:5 key:0

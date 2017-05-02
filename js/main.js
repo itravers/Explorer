@@ -30,7 +30,10 @@ var itemPrereqs;
 
 /* Keep Track of the players current position.*/
 var currentPos = [0, 0];
-var enemyPos = [null,null];//this will be updated by initEnemy
+//////var enemyPos = [null,null];//this will be updated by initEnemy
+
+/* Keeps track of all the enemies on map*/
+var enemies;
 
 /* Keeps track of the fires current state:
    0: The Fire is Out
@@ -66,9 +69,9 @@ var creatingSmeltingMachine = false;
 
 /*Keep track of player and enemy damage stats, and enemyHealth */
 var playerDamage = 30;
-var enemyDamage = 15;
-var enemyHealth = 10;
-var enemyAlive = true;
+//////var enemyDamage = 15;
+//////var enemyHealth = 10;
+//////var enemyAlive = true;
 var battleTimer; //used by setInterval in battles
 var inBattle = false;
 var fightingEnemy = false; //used to keep player from clicking Fight Enemy multiple times

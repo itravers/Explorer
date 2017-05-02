@@ -30,7 +30,11 @@ var itemPrereqs;
 
 /* Keep Track of the players current position.*/
 var currentPos = [0, 0];
-var enemyPos = [null,null];//this will be updated by initEnemy
+//////var enemyPos = [null,null];//this will be updated by initEnemy
+
+/* Keeps track of all the enemies on map*/
+var enemies;
+var currentEnemy = null; //the enemy we are fighting at the moment.
 
 /* Keeps track of the fires current state:
    0: The Fire is Out
@@ -66,9 +70,9 @@ var creatingSmeltingMachine = false;
 
 /*Keep track of player and enemy damage stats, and enemyHealth */
 var playerDamage = 30;
-var enemyDamage = 15;
-var enemyHealth = 10;
-var enemyAlive = true;
+//////var enemyDamage = 15;
+//////var enemyHealth = 10;
+//////var enemyAlive = true;
 var battleTimer; //used by setInterval in battles
 var inBattle = false;
 var fightingEnemy = false; //used to keep player from clicking Fight Enemy multiple times
@@ -165,7 +169,7 @@ $(function() {
 });
 
 /* Initializes the enemy position and state */
-function initEnemy(){
+function initEnemy(){/*
   //loop through map and find enemy position
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
@@ -179,11 +183,79 @@ function initEnemy(){
     }
   }
   addMessage("Enemy @ " + enemyPos[1] + ":" + enemyPos[0]);
+  */
+
+  //read enemies from enemy file
+  loadEnemies();
+
+  console.log("enemies: " + enemies);
+}
+
+/* Load the enemies from the enemy file into the enemies variable */
+function loadEnemies(){
+  //first we parse currentMap to see what enemy file we should load
+  var mapNum = getMapNum(currentMap);
+  var fileName = "enemy" + mapNum + ".txt";
+ 
+  //synchonously read from enemy file, and load into enemies array
+  $.ajax({
+    url  : "maps/"+fileName,
+    type : "get",
+    async: false,
+    success : function(data){
+      enemies = new Array(); //enemies is going to be an array so we can access in loop
+      var dataLine = '';
+      var dataAllLines = new Array();
+
+      //break the data into individual lines
+      for(var i = 0; i < data.length; i++){
+        if(data[i] == '\n'){
+          dataAllLines.push(dataLine);
+          dataLine = "";
+        }else{
+          dataLine += data[i];
+        }
+      }
+
+      /*each enemy is in a different spot of dataAllLines
+        go through each item in array and form a new enemy in enemies */
+      for(var i = 0; i < dataAllLines.length; i++){
+        var lineString = dataAllLines[i];
+        lineString = lineString.replace(/\s+/g, " ").trim();//remove extra whitespace
+        var line = lineString.split(" "); //split up each attribute of the enemy
+
+        var enemy = {}; //each enemy is going to be an object, so we can reference stats by name
+        enemies.push(enemy); //add the empty enemy to the enemies list
+        for(var j = 0; j < line.length; j++){
+          var stat = line[j].split(":"); //each stats name:value is split with a :
+          enemies[i][stat[0]] = stat[1]; //assign each stat a value
+
+          //make sure numbers don't get recorded as strings
+          if(j != 0) enemies[i][stat[0]] = parseInt(stat[1]);
+        }
+ 
+      }
+    },
+    error : function(e){
+      console.log("Could not read from maps/"+fileName);
+    } 
+  });
+
+}
+
+/* Returns the number of the map by parsing the name of
+   a given map. */
+function getMapNum(mapName){
+  var splitMap = mapName.split(".");//split the map name based on "."
+  mapName = splitMap[0]; //use the first part of the filename
+  mapName = mapName.substring(3); //strip the "map" part of the name off, we now have a num
+  mapName = parseInt(mapName);
+  return mapName;
 }
 
 /* removes enemy from the current map*/
-function removeEnemy(){
-  
+function removeEnemy(enemy){
+/*  
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
       if(map[i][j] == 'E'){
@@ -194,6 +266,14 @@ function removeEnemy(){
   enemyAlive = false;
   enemyPos[0] = null;
   enemyPos[1] = null; 
+
+*/
+ 
+  for(var i = 0; i < enemies.length; i++){
+    if(enemies[i] == enemy){
+      enemies.splice(i, 1);
+    }
+  }
   printMap();
 }
 
@@ -379,12 +459,13 @@ function itemPrereqSatisfied(item){
 
 /* Increments the name of the map */
 function incrementMap(){
-  var splitMap = currentMap.split("."); //splits map name at the dot
+/*  var splitMap = currentMap.split("."); //splits map name at the dot
   var mapName = splitMap[0]; //get the part before the dot
   mapName = mapName.substring(3);//strip the "map" off, we should now have a num
-  mapName = parseInt(mapName);
-  mapName++;
-  currentMap = "map"+mapName+".txt";
+  mapName = parseInt(mapName);*/
+  var mapNum = getMapNum(currentMap);
+  mapNum++;
+  currentMap = "map"+mapNum+".txt";
 }
 
 /* Loads the map from file
@@ -733,7 +814,7 @@ function movePlayer(dir){
   }
   
 
-  moveEnemy();//allow the enemy to move
+  moveEnemies();//allow the enemy to move
   printMap(); //Reprint the Map after player moved
   
   /* Player succedded in moving.
@@ -773,11 +854,23 @@ function movePlayer(dir){
     }
 
     //check if we are at same location as enemy, if so, prepare to battle
-    if(currentPos[0] == enemyPos[0] && currentPos[1] == enemyPos[1]){
+    /*if(currentPos[0] == enemyPos[0] && currentPos[1] == enemyPos[1]){
       addMessage("You Encountered An Enemy, Prepare to FIGHT!");
       battleEnemy();
     }else{
       stopBattle();
+    }*/
+
+    //check if we are at the same location as an enemy, if so, battle enemy
+    for(var i = 0; i < enemies.length; i++){
+      var xPos = enemies[i]["xPos"];
+      var yPos = enemies[i]["yPos"];
+      if(x == xPos && y == yPos){
+        battleEnemy(enemies[i]);
+        break; //we found a battle, so lets break and not accidently stop the battle
+      }else{
+        stopBattle();
+      }
     }
 
     //if the fire is out, take 1 health every time the player moves
@@ -810,15 +903,17 @@ function stopBattle(){
   clearInterval(battleTimer);
 }
 
-function battleEnemy(){
+function battleEnemy(enemy){
   if(inBattle == false){//don't battle enemy more than once at a time
     inBattle = true;
     $("#fightButton").show();
-    addMessage("You are in a battle!");
-  
+    addMessage("You are in a battle with a " + enemy['name']);
+ 
+    currentEnemy = enemy; //set the current enemy, so we know who to fight 
+
     battleTimer = setInterval(function(){ //the enemy will attack every 3 seconds
-      injurePlayer(enemyDamage); 
-      addMessage("Enemy Hits You For " + enemyDamage + " Damage!");
+      injurePlayer(enemy["damage"]); 
+      addMessage("A " + enemy['name'] + " Hits You For " + enemy["damage"] + " Damage!");
     }, 3000);
   }
 }
@@ -826,7 +921,7 @@ function battleEnemy(){
 /* Called when player hits the fight button 
    activates the button*/
 function fight(){
-  if(fightingEnemy == false){
+  if(fightingEnemy == false && inBattle == true){
     fightingEnemy = true;
     activateButton(40, "fightProgress", "Fight Enemy");
   }
@@ -835,17 +930,21 @@ function fight(){
 
 /* Called when the Fight Enemy button is done activating */
 function fightEnemy(){
-  addMessage("Damaged Enemy for " + playerDamage + " Damage!");
-  enemyHealth = enemyHealth - playerDamage;
-  if(enemyHealth > 0){
-    addMessage("Enemy Has " + enemyHealth + " Left!");
+  addMessage("You Hit a "+currentEnemy['name'] +" for " + playerDamage + " Damage!");
+  currentEnemy['health'] = currentEnemy['health'] - playerDamage;
+  if(currentEnemy['health'] > 0){
+    addMessage("A "+currentEnemy['name']+" Has " + currentEnemy['health'] + " Health Left!");
   }else{
-    addMessage("You Defeated the Enemy! He has dropped a KEY");
-    levelKey = true;
-    $("#keyInventory").text("Key : Aquired");
+    if(currentEnemy['key'] == 1){
+      addMessage("You Defeated the " +currentEnemy['name']+"! He has dropped a KEY");
+      levelKey = true;
+      $("#keyInventory").text("Key : Aquired");
+    }else{
+      addMessage("You Defeated the " +currentEnemy['name']+"!");
+    }
     stopBattle();
     //enemyHealth == 100;//reset enemy health for next enemy battle
-    removeEnemy(); 
+    removeEnemy(currentEnemy); 
   }  
 }
 
@@ -853,32 +952,41 @@ function fightEnemy(){
    The rest of the time the enemy moves in a random direction
    This will cause the enemy to creep closer to the player
 */
-function moveEnemy(){
-  if(!enemyAlive) return;
+function moveEnemy(enemy){
+  if(enemy["alive"] == 0) return;
   //subtract player location from enemy location
-  var xVec = currentPos[1] - enemyPos[1];
-  var yVec = currentPos[0] - enemyPos[0];
+  var xVec = currentPos[1] - enemy["xPos"];
+  var yVec = currentPos[0] - enemy["yPos"];
 
+//  addMessage("1 x : " + enemy["xPos"] + "   y : " + enemy["yPos"]);
   //3/4 time, make the enemy move in a random direction
   var random = Math.floor((Math.random() * 100) - 50);
   if(random <= 25){
-    enemyPos[0] = enemyPos[0] + Math.floor((Math.random() * 3) - 1);
-    enemyPos[1] = enemyPos[1] + Math.floor((Math.random() * 3) - 1);
+    enemy["yPos"] = enemy["yPos"] + Math.floor((Math.random() * 3) - 1);
+    enemy["xPos"] = enemy["xPos"] + Math.floor((Math.random() * 3) - 1);
   }else{
 
     if(xVec > 0){
-      enemyPos[1]++;
+      enemy["xPos"]++;
     }else if(xVec < 0){
-      enemyPos[1]--;
+      enemy["xPos"]--;
     }
 
     if(yVec > 0){
-      enemyPos[0]++;
+      enemy["yPos"]++;
     }else if(yVec < 0){
-      enemyPos[0]--;
+      enemy["yPos"]--;
     }
   }  
+//  addMessage("2 x : " + enemy["xPos"] + "   y : " + enemy["yPos"]);
+}
 
+/* Loop through all enemies and decide which direction 
+   they should move. */
+function moveEnemies(){
+  for(var i = 0; i < enemies.length; i++){
+    moveEnemy(enemies[i]);
+  }
 }
 
 
@@ -945,8 +1053,15 @@ function printPlayer(){
    located at a certain position on the map. */
 function getColorFromMapPosition(x, y){
   //first check if enemy is at location
-  if(enemyPos[0] != null){
+  /*if(enemyPos[0] != null){
     if(enemyPos[0] == x && enemyPos[1] == y) return "RED";
+  }*/
+
+  //first check if there is an enemy at location
+  for(var i = 0; i < enemies.length; i++){
+    var xPos = enemies[i]["xPos"];
+    var yPos = enemies[i]["yPos"];
+    if( xPos == x && yPos == y) return "RED";
   }
 
   if(map[x][y] == '0'){

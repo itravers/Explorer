@@ -34,6 +34,7 @@ var currentPos = [0, 0];
 
 /* Keeps track of all the enemies on map*/
 var enemies;
+var currentEnemy = null; //the enemy we are fighting at the moment.
 
 /* Keeps track of the fires current state:
    0: The Fire is Out
@@ -253,8 +254,8 @@ function getMapNum(mapName){
 }
 
 /* removes enemy from the current map*/
-function removeEnemy(){
-  
+function removeEnemy(enemy){
+/*  
   for(var i = 0; i < map.length; i++){
     for(var j = 0; j < map[i].length; j++){
       if(map[i][j] == 'E'){
@@ -265,6 +266,14 @@ function removeEnemy(){
   enemyAlive = false;
   enemyPos[0] = null;
   enemyPos[1] = null; 
+
+*/
+ 
+  for(var i = 0; i < enemies.length; i++){
+    if(enemies[i] == enemy){
+      enemies.splice(i, 1);
+    }
+  }
   printMap();
 }
 
@@ -893,15 +902,17 @@ function stopBattle(){
   clearInterval(battleTimer);
 }
 
-function battleEnemy(){
+function battleEnemy(enemy){
   if(inBattle == false){//don't battle enemy more than once at a time
     inBattle = true;
     $("#fightButton").show();
-    addMessage("You are in a battle!");
-  
+    addMessage("You are in a battle with a " + enemy['name']);
+ 
+    currentEnemy = enemy; //set the current enemy, so we know who to fight 
+
     battleTimer = setInterval(function(){ //the enemy will attack every 3 seconds
-      injurePlayer(enemyDamage); 
-      addMessage("Enemy Hits You For " + enemyDamage + " Damage!");
+      injurePlayer(enemy["damage"]); 
+      addMessage("A " + enemy['name'] + " Hits You For " + enemy["damage"] + " Damage!");
     }, 3000);
   }
 }
@@ -909,7 +920,7 @@ function battleEnemy(){
 /* Called when player hits the fight button 
    activates the button*/
 function fight(){
-  if(fightingEnemy == false){
+  if(fightingEnemy == false && inBattle == true){
     fightingEnemy = true;
     activateButton(40, "fightProgress", "Fight Enemy");
   }
@@ -918,17 +929,21 @@ function fight(){
 
 /* Called when the Fight Enemy button is done activating */
 function fightEnemy(){
-  addMessage("Damaged Enemy for " + playerDamage + " Damage!");
-  enemyHealth = enemyHealth - playerDamage;
-  if(enemyHealth > 0){
-    addMessage("Enemy Has " + enemyHealth + " Left!");
+  addMessage("Hit a "+currentEnemy['name'] +" for " + playerDamage + " Damage!");
+  currentEnemy['health'] = currentEnemy['health'] - playerDamage;
+  if(currentEnemy['health'] > 0){
+    addMessage("A "+currentEnemy['name']+" Has " + currentEnemy['health'] + " Left!");
   }else{
-    addMessage("You Defeated the Enemy! He has dropped a KEY");
-    levelKey = true;
-    $("#keyInventory").text("Key : Aquired");
+    if(currentEnemy['key'] == 1){
+      addMessage("You Defeated the " +currentEnemy['name']+"! He has dropped a KEY");
+      levelKey = true;
+      $("#keyInventory").text("Key : Aquired");
+    }else{
+      addMessage("You Defeated the " +currentEnemy['name']+"!");
+    }
     stopBattle();
     //enemyHealth == 100;//reset enemy health for next enemy battle
-    removeEnemy(); 
+    removeEnemy(currentEnemy); 
   }  
 }
 
@@ -942,7 +957,7 @@ function moveEnemy(enemy){
   var xVec = currentPos[1] - enemy["xPos"];
   var yVec = currentPos[0] - enemy["yPos"];
 
-  addMessage("1 x : " + enemy["xPos"] + "   y : " + enemy["yPos"]);
+//  addMessage("1 x : " + enemy["xPos"] + "   y : " + enemy["yPos"]);
   //3/4 time, make the enemy move in a random direction
   var random = Math.floor((Math.random() * 100) - 50);
   if(random <= 25){
@@ -962,7 +977,7 @@ function moveEnemy(enemy){
       enemy["yPos"]--;
     }
   }  
-  addMessage("2 x : " + enemy["xPos"] + "   y : " + enemy["yPos"]);
+//  addMessage("2 x : " + enemy["xPos"] + "   y : " + enemy["yPos"]);
 }
 
 /* Loop through all enemies and decide which direction 

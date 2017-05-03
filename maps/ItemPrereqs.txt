@@ -12,3 +12,4 @@ pickAx wood:500 water:1000 rock:200 glass:100 sand:500 iron:30 glassMachine:1 pi
 smeltingMachine wood:1000 water:1500 rock:500 glass:100 sand:1000 iron:50 smeltingMachine:0 time:50
 healthPack wood:20 water:20 sand:20 time:20
 woodSword wood:75 time:100
+glassSword woodSword:1 glass:10 time:250

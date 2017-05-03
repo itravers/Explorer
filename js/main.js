@@ -68,6 +68,7 @@ var creatingPickAx = false;
 var creatingSmeltingMachine = false;
 var makingHealthPack = false;
 var creatingWoodSword = false;
+var creatingGlassSword = false;
 
 /*Keep track of player and enemy damage stats, and enemyHealth */
 var playerDamage = 1;
@@ -77,9 +78,9 @@ var fightingEnemy = false; //used to keep player from clicking Fight Enemy multi
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
-var wood = 1;      /* The wood the player has left. */
+var wood = 200;      /* The wood the player has left. */
 var water = 10;     /* The water the player has left. */
-var sand = 0;      /* The sand the player has left. */
+var sand = 100;      /* The sand the player has left. */
 var glass = 0;     /* The glass the player has left. */
 var rock = 0;      /* The rocks the player has left. */
 var ironOre = 0;   /* The ironOre the player has left. */
@@ -97,6 +98,7 @@ var pickAx = 0;
 var smeltingMachine = 0;
 var levelKey = false;
 var woodSword = 0;
+var glassSword = 0;
 
 /* Keep track of the players skill stats. */
 var telescopeLevel = 50;                       /* The Level the player has gotten there telescoping to.*/
@@ -431,6 +433,14 @@ function itemPrereqSatisfied(item){
           addMessage("Already Have Wood Sword!");
         }
       }
+    }else if(key == 'glassSword'){
+      if(glassSword != itemPrereqs[item][key]){
+        if(glassSword == 0){
+          addMessage("Need Glass Sword!");
+        }else{
+          addMessage("Already Have Glass Sword!");
+        }
+      }
     }
   }
   return satisfied; 
@@ -645,7 +655,8 @@ function updateInventory(){
   if(glassMachine == 1) $("#glassMachineInventory").text("Glass Machine : Crafted");
   if(pickAx == 1) $("#pickAxInventory").text("Pick Ax : Crafted");
   if(smeltingMachine == 1) $("#smeltingMachineInventory").text("Smelting M. : Crafted");
-  if(woodSword == 1) $("#woodSwordInventory").text("Wood Sword : Crafted");
+  if(woodSword == 1) $("#swordInventory").text("Wood Sword : Crafted");
+  if(glassSword == 1) $("#swordInventory").text("Glass Sword : Crafted");
   if(wood > 0) $("#woodInventory").text("Wood : " + wood);
   if(water > 0) $("#waterInventory").text("Water : " + water);
   if(sand > 0) $("#sandInventory").text("Sand : " + sand);
@@ -751,6 +762,12 @@ function updateButtons(){
     $("#createWoodSwordButton").show();
   }else{
     $("#createWoodSwordButton").hide();
+  }
+
+  if(glass > 0 && woodSword == 1 && glassSword == 0){
+    $("#createGlassSwordButton").show();
+  }else{
+    $("#createGlassSwordButton").hide();
   }
 }
 
@@ -1184,6 +1201,8 @@ function printMap(){
       }
     }
   }
+  updateButtons();
+  updateInventory();
   printPlayer(); //Draw player piece after rest of map has been drawn
 }
 
@@ -1316,6 +1335,10 @@ function createItem(item){
     addMessage("Crafted a Wood Sword!");
     woodSword = 1;
     playerDamage = 5; 
+  }else if(item == 'glassSword'){
+    addMessage("Crafted a Glass Sword!");
+    glassSword = 1;
+    playerDamage = 15;
   }
 }
 
@@ -1332,6 +1355,15 @@ function healPlayer(amt){
   }
 }
 
+/* Called by user pressing createGlassSwordButton
+   Creates a glass sword
+*/
+function createGlassSword(){
+  if(itemPrereqSatisfied('glassSword') && creatingGlassSword == false){
+    creatingGlassSword = true;
+    activateButton(itemPrereqs['glassSword']['time'], "createGlassSwordProgress", "Create Glass Sword"); 
+  }
+}
 
 /* Called by user pressing createWoodSwordButton
    Creates a wood sword
@@ -1587,6 +1619,11 @@ function finishButton(buttonID){
   if(buttonID == 'createWoodSwordProgress'){
     createItem('woodSword');
     creatingWoodSword = false;
+  }
+  
+  if(buttonID == 'createGlassSwordProgress'){
+    createItem('glassSword');
+    creatingGlassSword = false;
   }
 
   updateInventory();

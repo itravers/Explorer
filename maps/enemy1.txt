@@ -1,3 +1,1 @@
-name:Duck xPos:8 yPos:5 damage:2 health:20 alive:1 key:0
-name:Deer xPos:18 yPos:15 damage:5 health:40 alive:1 key:0
-name:Guard xPos:49 yPos:45 damage:10 health:80 alive:1 key:1
+name:Ant xPos:10 yPos:10 damage:1 health:1 alive:1 key:1

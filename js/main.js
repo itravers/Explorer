@@ -30,7 +30,6 @@ var itemPrereqs;
 
 /* Keep Track of the players current position.*/
 var currentPos = [0, 0];
-//////var enemyPos = [null,null];//this will be updated by initEnemy
 
 /* Keeps track of all the enemies on map*/
 var enemies;
@@ -68,21 +67,20 @@ var creatingGlassMachine = false;
 var creatingPickAx = false;
 var creatingSmeltingMachine = false;
 var makingHealthPack = false;
+var creatingWoodSword = false;
+var creatingGlassSword = false;
 
 /*Keep track of player and enemy damage stats, and enemyHealth */
-var playerDamage = 30;
-//////var enemyDamage = 15;
-//////var enemyHealth = 10;
-//////var enemyAlive = true;
+var playerDamage = 1;
 var battleTimer; //used by setInterval in battles
 var inBattle = false;
 var fightingEnemy = false; //used to keep player from clicking Fight Enemy multiple times
 
 /* Keep track of the players inventory. */
-var health = 50;  /* The amount of heath the player has left. */
-var wood = 100;      /* The wood the player has left. */
-var water = 100;     /* The water the player has left. */
-var sand = 100;      /* The sand the player has left. */
+var health = 100;  /* The amount of heath the player has left. */
+var wood = 2;      /* The wood the player has left. */
+var water = 10;     /* The water the player has left. */
+var sand = 0;      /* The sand the player has left. */
 var glass = 0;     /* The glass the player has left. */
 var rock = 0;      /* The rocks the player has left. */
 var ironOre = 0;   /* The ironOre the player has left. */
@@ -99,6 +97,8 @@ var glassMachine = 0;
 var pickAx = 0;
 var smeltingMachine = 0;
 var levelKey = false;
+var woodSword = 0;
+var glassSword = 0;
 
 /* Keep track of the players skill stats. */
 var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
@@ -174,7 +174,6 @@ function initEnemy(){
 
   //read enemies from enemy file
   loadEnemies();
-
   console.log("enemies: " + enemies);
 }
 
@@ -426,6 +425,22 @@ function itemPrereqSatisfied(item){
         }
         satisfied = false;
       }
+    }else if(key == 'woodSword'){
+      if(woodSword != itemPrereqs[item][key]){
+        if(woodSword == 0){
+          addMessage("Need Wood Sword!");
+        }else{
+          addMessage("Already Have Wood Sword!");
+        }
+      }
+    }else if(key == 'glassSword'){
+      if(glassSword != itemPrereqs[item][key]){
+        if(glassSword == 0){
+          addMessage("Need Glass Sword!");
+        }else{
+          addMessage("Already Have Glass Sword!");
+        }
+      }
     }
   }
   return satisfied; 
@@ -433,10 +448,6 @@ function itemPrereqSatisfied(item){
 
 /* Increments the name of the map */
 function incrementMap(){
-/*  var splitMap = currentMap.split("."); //splits map name at the dot
-  var mapName = splitMap[0]; //get the part before the dot
-  mapName = mapName.substring(3);//strip the "map" off, we should now have a num
-  mapName = parseInt(mapName);*/
   var mapNum = getMapNum(currentMap);
   mapNum++;
   currentMap = "map"+mapNum+".txt";
@@ -644,6 +655,8 @@ function updateInventory(){
   if(glassMachine == 1) $("#glassMachineInventory").text("Glass Machine : Crafted");
   if(pickAx == 1) $("#pickAxInventory").text("Pick Ax : Crafted");
   if(smeltingMachine == 1) $("#smeltingMachineInventory").text("Smelting M. : Crafted");
+  if(woodSword == 1) $("#swordInventory").text("Wood Sword : Crafted");
+  if(glassSword == 1) $("#swordInventory").text("Glass Sword : Crafted");
   if(wood > 0) $("#woodInventory").text("Wood : " + wood);
   if(water > 0) $("#waterInventory").text("Water : " + water);
   if(sand > 0) $("#sandInventory").text("Sand : " + sand);
@@ -653,6 +666,7 @@ function updateInventory(){
   if(iron > 0) $("#ironInventory").text("Iron : " + iron);
 
   if(levelKey){
+    $("#keyInventory").css({'color':'red'});
     $("#keyInventory").text("Key : Aquired");
   }else{
     $("#keyInventory").text("");
@@ -743,6 +757,18 @@ function updateButtons(){
   }else{
     $('#makeHealthPackButton').hide();
   }
+
+  if(wood > 0 && woodSword == 0){
+    $("#createWoodSwordButton").show();
+  }else{
+    $("#createWoodSwordButton").hide();
+  }
+
+  if(glass > 0 && woodSword == 1 && glassSword == 0){
+    $("#createGlassSwordButton").show();
+  }else{
+    $("#createGlassSwordButton").hide();
+  }
 }
 
 
@@ -791,7 +817,6 @@ function movePlayer(dir){
       currentPos[0]++; //Player moves down successfully.
       success = true;
     }
-
   }
   
 
@@ -892,6 +917,11 @@ function battleEnemy(enemy){
  
     currentEnemy = enemy; //set the current enemy, so we know who to fight 
 
+    //enemy hits player right away
+      injurePlayer(enemy["damage"]); 
+      addMessage("A " + enemy['name'] + " Hits You For " + enemy["damage"] + " Damage!");
+    
+    
     battleTimer = setInterval(function(){ //the enemy will attack every 3 seconds
       injurePlayer(enemy["damage"]); 
       addMessage("A " + enemy['name'] + " Hits You For " + enemy["damage"] + " Damage!");
@@ -919,7 +949,8 @@ function fightEnemy(){
     if(currentEnemy['key'] == 1){
       addMessage("You Defeated the " +currentEnemy['name']+"! He has dropped a KEY");
       levelKey = true;
-      $("#keyInventory").text("Key : Aquired");
+      //$("#keyInventory").text("Key : Aquired");
+      updateInventory();
     }else{
       addMessage("You Defeated the " +currentEnemy['name']+"!");
     }
@@ -1033,11 +1064,6 @@ function printPlayer(){
 /* Returns a specific HEX COLOR based on what is
    located at a certain position on the map. */
 function getColorFromMapPosition(x, y){
-  //first check if enemy is at location
-  /*if(enemyPos[0] != null){
-    if(enemyPos[0] == x && enemyPos[1] == y) return "RED";
-  }*/
-
   //first check if there is an enemy at location
   for(var i = 0; i < enemies.length; i++){
     var xPos = enemies[i]["xPos"];
@@ -1062,7 +1088,6 @@ function getColorFromMapPosition(x, y){
   }else if(map[x][y] == 'D'){//door
     return '#ff69b4';//pink
   }
-
 }
 
 
@@ -1073,6 +1098,7 @@ function getDistance(x1, y1, x2, y2){
   returnVal = Math.sqrt(returnVal);
   return returnVal;
 }
+
 
 /*Initialized the variables that seperate the canvas from the
   map that is printed on the canvas. Gives border room for the
@@ -1175,6 +1201,8 @@ function printMap(){
       }
     }
   }
+  updateButtons();
+  updateInventory();
   printPlayer(); //Draw player piece after rest of map has been drawn
 }
 
@@ -1303,8 +1331,17 @@ function createItem(item){
   }else if(item == 'healthPack'){
     addMessage("You Healed Yourself With a Health Pack");
     healPlayer(20);
+  }else if(item == 'woodSword'){
+    addMessage("Crafted a Wood Sword!");
+    woodSword = 1;
+    playerDamage = 5; 
+  }else if(item == 'glassSword'){
+    addMessage("Crafted a Glass Sword!");
+    glassSword = 1;
+    playerDamage = 15;
   }
 }
+
 
 /* Heals player for given amount, up to 100, but not over */
 function healPlayer(amt){
@@ -1315,6 +1352,26 @@ function healPlayer(amt){
   }else{
     //this should only happen if playerHealth is within amt of 100
     health = 100;
+  }
+}
+
+/* Called by user pressing createGlassSwordButton
+   Creates a glass sword
+*/
+function createGlassSword(){
+  if(itemPrereqSatisfied('glassSword') && creatingGlassSword == false){
+    creatingGlassSword = true;
+    activateButton(itemPrereqs['glassSword']['time'], "createGlassSwordProgress", "Create Glass Sword"); 
+  }
+}
+
+/* Called by user pressing createWoodSwordButton
+   Creates a wood sword
+*/
+function createWoodSword(){
+  if(itemPrereqSatisfied('woodSword') && creatingWoodSword == false){
+    creatingWoodSword = true;
+    activateButton(itemPrereqs['woodSword']['time'], "createWoodSwordProgress", "Create Wood Sword"); 
   }
 }
 
@@ -1557,6 +1614,16 @@ function finishButton(buttonID){
   if(buttonID == 'makeHealthPackProgress'){
     createItem('healthPack');
     makingHealthPack = false;
+  }
+
+  if(buttonID == 'createWoodSwordProgress'){
+    createItem('woodSword');
+    creatingWoodSword = false;
+  }
+  
+  if(buttonID == 'createGlassSwordProgress'){
+    createItem('glassSword');
+    creatingGlassSword = false;
   }
 
   updateInventory();

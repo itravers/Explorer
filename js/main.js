@@ -78,9 +78,9 @@ var fightingEnemy = false; //used to keep player from clicking Fight Enemy multi
 
 /* Keep track of the players inventory. */
 var health = 100;  /* The amount of heath the player has left. */
-var wood = 200;      /* The wood the player has left. */
+var wood = 2;      /* The wood the player has left. */
 var water = 10;     /* The water the player has left. */
-var sand = 100;      /* The sand the player has left. */
+var sand = 0;      /* The sand the player has left. */
 var glass = 0;     /* The glass the player has left. */
 var rock = 0;      /* The rocks the player has left. */
 var ironOre = 0;   /* The ironOre the player has left. */
@@ -101,7 +101,7 @@ var woodSword = 0;
 var glassSword = 0;
 
 /* Keep track of the players skill stats. */
-var telescopeLevel = 50;                       /* The Level the player has gotten there telescoping to.*/
+var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
 var siteDistance = (telescopeLevel*2)+1;      /* The distance away from player they are able to see. */
 
 

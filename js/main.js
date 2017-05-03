@@ -42,7 +42,7 @@ var currentEnemy = null; //the enemy we are fighting at the moment.
    2: The fire is burning
    3: The fire is roasting
    4: The fire is fully stoked */
-var fireState = 4;
+var fireState = 1;
 
 /* Keeps track of the amount of moves the player has made
    since the last time the fire's state has changed
@@ -67,6 +67,7 @@ var creatingRockIronShovel = false;
 var creatingGlassMachine = false;
 var creatingPickAx = false;
 var creatingSmeltingMachine = false;
+var makingHealthPack = false;
 
 /*Keep track of player and enemy damage stats, and enemyHealth */
 var playerDamage = 30;
@@ -78,14 +79,14 @@ var inBattle = false;
 var fightingEnemy = false; //used to keep player from clicking Fight Enemy multiple times
 
 /* Keep track of the players inventory. */
-var health = 1000;  /* The amount of heath the player has left. */
-var wood = 10000;      /* The wood the player has left. */
-var water = 10000;     /* The water the player has left. */
-var sand = 10000;      /* The sand the player has left. */
-var glass = 10000;     /* The glass the player has left. */
-var rock = 10000;      /* The rocks the player has left. */
-var ironOre = 10000;   /* The ironOre the player has left. */
-var iron = 10000;      /* The iron the player has left. */
+var health = 50;  /* The amount of heath the player has left. */
+var wood = 100;      /* The wood the player has left. */
+var water = 100;     /* The water the player has left. */
+var sand = 100;      /* The sand the player has left. */
+var glass = 0;     /* The glass the player has left. */
+var rock = 0;      /* The rocks the player has left. */
+var ironOre = 0;   /* The ironOre the player has left. */
+var iron = 0;      /* The iron the player has left. */
 
 /* Keep track of the permanent items the player has in inventory.
    0: Player does not have item
@@ -100,7 +101,7 @@ var smeltingMachine = 0;
 var levelKey = false;
 
 /* Keep track of the players skill stats. */
-var telescopeLevel = 80;                       /* The Level the player has gotten there telescoping to.*/
+var telescopeLevel = 0;                       /* The Level the player has gotten there telescoping to.*/
 var siteDistance = (telescopeLevel*2)+1;      /* The distance away from player they are able to see. */
 
 
@@ -169,21 +170,7 @@ $(function() {
 });
 
 /* Initializes the enemy position and state */
-function initEnemy(){/*
-  //loop through map and find enemy position
-  for(var i = 0; i < map.length; i++){
-    for(var j = 0; j < map[i].length; j++){
-      if(map[i][j] == 'E'){
-        enemyHealth = 10;
-        enemyPos[0] = i;
-        enemyPos[1] = j; 
-        enemyAlive = true;
-        map[i][j] = '0';//remove enemy from map, we'll reference with enemyPos from now on
-      }
-    }
-  }
-  addMessage("Enemy @ " + enemyPos[1] + ":" + enemyPos[0]);
-  */
+function initEnemy(){
 
   //read enemies from enemy file
   loadEnemies();
@@ -255,19 +242,6 @@ function getMapNum(mapName){
 
 /* removes enemy from the current map*/
 function removeEnemy(enemy){
-/*  
-  for(var i = 0; i < map.length; i++){
-    for(var j = 0; j < map[i].length; j++){
-      if(map[i][j] == 'E'){
-        map[i][j] = '0';
-      }
-    }
-  }
-  enemyAlive = false;
-  enemyPos[0] = null;
-  enemyPos[1] = null; 
-
-*/
  
   for(var i = 0; i < enemies.length; i++){
     if(enemies[i] == enemy){
@@ -761,6 +735,13 @@ function updateButtons(){
     $('#createBucketButton').show();
   }else{
     $('#createBucketButton').hide();
+  }
+
+  //show makeHealthPackButton if we have wood, sand and water, and health is less than 100
+  if(health < 100 && wood > 0 && water > 0 && sand > 0){
+    $('#makeHealthPackButton').show();
+  }else{
+    $('#makeHealthPackButton').hide();
   }
 }
 
@@ -1319,6 +1300,31 @@ function createItem(item){
     smeltingMachine = 1;
     $('#smeltingMachineInventory').text('Smelting Machine : Crafted');
     addMessage("Crafted Smelting Machine");
+  }else if(item == 'healthPack'){
+    addMessage("You Healed Yourself With a Health Pack");
+    healPlayer(20);
+  }
+}
+
+/* Heals player for given amount, up to 100, but not over */
+function healPlayer(amt){
+  if(health <= (100 - amt)){
+    health += amt;
+  }else if(health > 100){
+    //do nothing if player health is already bigger than 100
+  }else{
+    //this should only happen if playerHealth is within amt of 100
+    health = 100;
+  }
+}
+
+/* Called by user pressing makeHealthPackButton
+   Heals player by 20 %
+*/
+function makeHealthPack(){
+  if(itemPrereqSatisfied('healthPack') && makingHealthPack == false){
+    makingHealthPack = true;
+    activateButton(itemPrereqs['healthPack']['time'], "makeHealthPackProgress", "Make Health Pack");
   }
 }
 
@@ -1546,6 +1552,11 @@ function finishButton(buttonID){
   if(buttonID == 'fightProgress'){
     fightEnemy();
     fightingEnemy = false;
+  }
+
+  if(buttonID == 'makeHealthPackProgress'){
+    createItem('healthPack');
+    makingHealthPack = false;
   }
 
   updateInventory();

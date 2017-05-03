@@ -1,1 +1,7 @@
-name:turtle xPos:5 yPos:5 damage:2 health:20 alive:1 key:1
+name:Turtle xPos:5 yPos:5 damage:2 health:20 alive:1 key:0
+name:Turtle xPos:25 yPos:5 damage:2 health:20 alive:1 key:0
+name:Turtle xPos:5 yPos:50 damage:2 health:20 alive:1 key:0
+name:Turtle xPos:30 yPos:50 damage:2 health:20 alive:1 key:0
+name:Turtle xPos:19 yPos:38 damage:2 health:20 alive:1 key:0
+name:CutePuppy xPos:22 yPos:22 damage:1 health:5 alive:1 key:0
+name:UglyPuppy xPos:50 yPos:50 damage:10 health:100 alive:1 key:1
